@@ -26,7 +26,9 @@ class Ball extends Rectangle
   }
 }
 
-
+function update(deltatime) {
+  ball.position.x += ball.velocity.x * deltatime;
+}
 
 // creates the canvas
 const canvas = document.getElementById('pong');
@@ -35,9 +37,10 @@ const context = canvas.getContext('2d');
 //creates new ball
 const ball = new Ball;
 
+
 // fills the canvas with black (specified width and height in html)
 context.fillStyle = '#000';
 context.fillRect(0, 0, canvas.width, canvas.height);
 // creates a white ball 10 x 10 pixles
 context.fillStyle = '#fff';
-context.fillRect(0, 0, 10, 10);
+context.fillRect(ball.position.x, ball.position.y, ball.size.x, ball.size.y);
