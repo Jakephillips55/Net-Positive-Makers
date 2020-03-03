@@ -1,3 +1,4 @@
+'use strict';
 
 class Vector
 {
@@ -26,21 +27,34 @@ class Ball extends Rectangle
   }
 }
 
+
+const canvas = document.getElementById('pong');
+const context = canvas.getContext('2d');
+
+const ball = new Ball;
+ball.position.x = 100;
+ball.position.y = 100;
+ball.velocity.Ballx = 100;
+ball.velocity.y = 100;
+
+var  lastTime;
+function callback(milliseconds) {
+  if (lastTime) {
+    update((milliseconds - lastTime) / 1000);
+  }
+  lastTime = milliseconds;
+  requestAnimationFrame(callback);
+}
 function update(deltatime) {
   ball.position.x += ball.velocity.x * deltatime;
+  ball.position.y += ball.velocity.y * deltatime;
+
+  context.fillStyle = '#000';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  context.fillStyle = '#fff';
+  context.fillRect(ball.position.x, ball.position.y, ball.size.x, ball.size.y);
+
 }
 
-// creates the canvas
-const canvas = document.getElementById('pong');
-// makes the object 2d and includes methods and properties for drawing
-const context = canvas.getContext('2d');
-//creates new ball
-const ball = new Ball;
-
-
-// fills the canvas with black (specified width and height in html)
-context.fillStyle = '#000';
-context.fillRect(0, 0, canvas.width, canvas.height);
-// creates a white ball 10 x 10 pixles
-context.fillStyle = '#fff';
-context.fillRect(ball.position.x, ball.position.y, ball.size.x, ball.size.y);
+callback()
