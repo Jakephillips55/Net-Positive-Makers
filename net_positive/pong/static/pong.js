@@ -71,7 +71,7 @@ class Pong
   {
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
-
+    this.pixelData = this._context.getImageData(0, 0, 600, 400)
     this.ball = new Ball;
 
     this.done = false;
@@ -129,12 +129,12 @@ class Pong
     this.players[1].position.y = this._canvas.height / 2;
 
     console.log(`Player 1 Score: ${this.players[0].score} Player 2 Score: ${this.players[1].score}`)
-
       if (this.players[0].score < 21 && this.players[1].score < 21){
         this.start()    
       } else {
         this.done = true
         console.log(this.done)
+        console.log(this.pixelData)
         this.restartGame(); 
       }
   }
@@ -209,6 +209,8 @@ function keyboardHandlerFunction(e) {
     pong.start();
   } 
 }
+
+
 
 //player vs player controls
 // function keyboardHandlerFunction(e) {
