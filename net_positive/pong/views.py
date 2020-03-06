@@ -23,4 +23,8 @@ def play(request):
     bally = request.POST.get('bally')
     court = {'ballx ': ballx, 'bally ': bally }
     print(court)
-    return HttpResponse(court)
+    data = {
+      'ballx': SimpleBot.post_bot(court),
+      'bally': 'hello'
+    }
+    return JsonResponse(data)

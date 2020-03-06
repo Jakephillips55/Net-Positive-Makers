@@ -117,6 +117,20 @@ class Pong
     xmlhttp.send();
   }
 
+  postMove(){
+    let url = `http://localhost:8000/pong/play?ballx=${this.ball.position.x}&bally=${this.ball.position.y}&paddley=${this.players[1].position.y}`
+    var that = this
+    var xmlhttp = new XMLHttpRequest()
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var myArr = JSON.parse(this.responseText);
+        that._move = myArr['up']
+     }
+    };
+    xmlhttp.open('POST', url, true);
+    xmlhttp.send();
+  }
+
   collide(player, ball) {
     if (player.left < ball.right && player.right > ball.left && player.top < ball.bottom && player.bottom > ball.top) {
       const length = ball.velocity.length
