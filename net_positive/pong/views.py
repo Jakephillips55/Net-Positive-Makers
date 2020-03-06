@@ -7,21 +7,20 @@ def home(request, template='index.html'):
     axis = HttpResponse(play(request))
     return render(request, template, {})
 
-
 def bot(request):
     ballx = request.GET.get('ballx')
     bally = request.GET.get('bally')
-    paddley = request.GET.get('paddley')
-    court = {'ballx': ballx, 'bally': bally, 'paddley': paddley}
+    paddely = request.GET.get('paddely')
+    court = {'ballx': ballx, 'bally': bally}
     data = {
-      'up': SimpleBot.simple_bot(court),
+      'bally': SimpleBot.simple_bot(court),
     }
     return JsonResponse(data)
 
 def play(request):
     ballx = request.POST.get('ballx')
     bally = request.POST.get('bally')
-    court = {'ballx ': ballx, 'bally ': bally }
+    court = {'ballx ': ballx, ' bally ': bally }
     print(court)
     data = {
       'ballx': SimpleBot.post_bot(court),

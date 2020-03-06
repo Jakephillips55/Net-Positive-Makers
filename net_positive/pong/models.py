@@ -2,10 +2,8 @@ from django.db import models
 
 class SimpleBot(models.Model):
 
-    @classmethod
     def simple_bot(request, court):
-        return court["bally"] > court["paddley"]
+        return court['bally'] > court['paddely']
 
-    @classmethod
-    def post_bot(request, court):
-        return court['ballx']
+    def post_bot(request):
+        return '1'
