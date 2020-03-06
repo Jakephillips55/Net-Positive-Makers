@@ -4,7 +4,9 @@ from django.http import JsonResponse
 from pong.models import SimpleBot
 
 def home(request, template='index.html'):
+    axis = HttpResponse(play(request))
     return render(request, template, {})
+
 
 def bot(request):
     ballx = request.GET.get('ballx')
@@ -17,4 +19,8 @@ def bot(request):
     return JsonResponse(data)
 
 def play(request):
-    return HttpResponse('<h1> Pong Play </h3>')
+    ballx = request.POST.get('ballx')
+    bally = request.POST.get('bally')
+    court = {'ballx ': ballx, 'bally ': bally }
+    print(court)
+    return HttpResponse(court)

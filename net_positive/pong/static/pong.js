@@ -55,7 +55,7 @@ class Ball extends Rectangle
   }
 }
 
-class Player extends Rectangle 
+class Player extends Rectangle
 {
   constructor()
   {
@@ -122,7 +122,7 @@ class Pong
       const length = ball.velocity.length
       ball.velocity.x = -ball.velocity.x;
       ball.velocity.y += 300 * (Math.random() - .5);
-      ball.velocity.length = length * 1.1; 
+      ball.velocity.length = length * 1.1;
     }
   }
 
@@ -151,12 +151,12 @@ class Pong
     console.log(`Player 1 Score: ${this.players[0].score} Player 2 Score: ${this.players[1].score}`)
 
       if (this.players[0].score < 21 && this.players[1].score < 21){
-        this.start()    
+        this.start()
       } else {
         this.done = true
         console.log(this.done)
         console.log(this.pixelData)
-        this.restartGame(); 
+        this.restartGame();
       }
   }
 
@@ -187,8 +187,8 @@ class Pong
 
     this.ball.position.x += this.ball.velocity.x * deltatime;
     this.ball.position.y += this.ball.velocity.y * deltatime;
- 
-  
+
+
     if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
       var playerId;
       if (this.ball.velocity.x < 0) {
@@ -198,12 +198,12 @@ class Pong
         playerId = 0;
         this.reward = -1;
       }
-      
+
       this.players[playerId].score++;
       console.log(this.reward)
       this.reset();
     }
-  
+
     if (this.ball.top < 0 || this.ball.bottom > this._canvas.height) {
       this.ball.velocity.y = -this.ball.velocity.y
     }
@@ -214,11 +214,11 @@ class Pong
   // bot lvl 5
   if (this.ball.position.y > this.players[1].position.y && pong.players[1].position.y < (pong._canvas.height - 50)) {
     this.players[1].position.y += 10;
-  } 
+  }
   if (this.ball.position.y < this.players[1].position.y && pong.players[0].position.y > 50) {
     this.players[1].position.y -= 10;
   }
-    
+
   this.players.forEach(player => this.collide(player, this.ball))
 
   console.log(this.reward)
@@ -229,7 +229,7 @@ class Pong
 const canvas = document.getElementById('pong');
 const pong = new Pong(canvas);
 
-window.addEventListener('keydown', keyboardHandlerFunction);  
+window.addEventListener('keydown', keyboardHandlerFunction);
 
 function keyboardHandlerFunction(e) {
   if(e.keyCode === 40 && pong.players[0].position.y < (pong._canvas.height - 50) ) {
@@ -237,10 +237,10 @@ function keyboardHandlerFunction(e) {
   }
   else if(e.keyCode === 38 && pong.players[0].position.y > 50) {
       pong.players[0].position.y -= 25
-  }  
+  }
   else if(e.keyCode === 32) {
     pong.start();
-  } 
+  }
 }
 
 // player vs player controls
@@ -251,13 +251,13 @@ function keyboardHandlerFunction(e) {
 //   }
 //   else if(e.keyCode === 87 && pong.players[0].position.y > 50) {
 //       pong.players[0].position.y -= 25
-//   }  
+//   }
 //   else if(e.keyCode === 40 && pong.players[1].position.y < (pong._canvas.height - 50)) {
 //     pong.players[1].position.y += 25
-//   }  
+//   }
 //   else if(e.keyCode === 38 && pong.players[1].position.y > 50) {
 //     pong.players[1].position.y -= 25
-//   }  
+//   }
 // }
 
 // mouse controls
