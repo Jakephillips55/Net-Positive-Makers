@@ -1,9 +1,12 @@
 from django.db import models
 
 class SimpleBot(models.Model):
-
+    @classmethod
     def simple_bot(request, court):
-        return court['bally'] <= court['paddely']
-
-    def post_bot(request):
-        return '1'
+        print(court)
+        if int(court["bally"]) <= int(court["paddley"]):
+            print(True)
+            return True
+        else:
+            print(False)
+            return False

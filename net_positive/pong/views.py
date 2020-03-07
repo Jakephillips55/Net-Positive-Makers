@@ -8,10 +8,9 @@ def home(request, template='index.html'):
     return render(request, template, {})
 
 def bot(request):
-    ballx = request.GET.get('ballx')
     bally = request.GET.get('bally')
-    paddely = request.GET.get('paddely')
-    court = {'ballx': ballx, 'bally': bally}
+    paddley = request.GET.get('paddley')
+    court = {'bally': bally, 'paddley': paddley}
     data = {
       'bally': SimpleBot.simple_bot(court),
     }
