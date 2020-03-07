@@ -75,7 +75,7 @@ class Pong
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
     this.pixelData = this._context.getImageData(0, 0, 600, 400);
-    // console.log(this.pixelData);
+    console.log(this.pixelData);
 
     this.ball = new Ball;
 
