@@ -10,3 +10,6 @@ class SimpleBot(models.Model):
         else:
             print(False)
             return False
+
+    def other_bot(request):
+        return '1'

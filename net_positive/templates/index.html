@@ -8,5 +8,13 @@
    <canvas id='pong' width='600' height='400'></canvas>
    <script src={% static "pong.js" %}></script>
    <script postData();></script>
+   <input id="axis" onblur="postMove()">
+
+   <form action="/get_name" method="post"> {% csrf_token %}
+    <label for="your_name">Your name: </label>
+    <input id="get_name" type="text" name="get_name" value="{{ current_name }}" maxlength="100" required>
+    <input type="submit" value="OK">
+  </form>
+
   </body>
 </html>
