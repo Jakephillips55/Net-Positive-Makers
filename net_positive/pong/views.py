@@ -40,3 +40,10 @@ def get_name(request):
             form = NameForm()
 
             return render(request, 'index.html' , {'form': form})
+
+# stream of data continous flow - capture the stream write it to cassandra
+# capca streams? what you do with this is its a que you write a pend only que
+# msg que, what you do is you have intervals of data of 5 mins and it querys the
+# last 5 mins without breaking - look into map reduces with - need to know exacts
+# have a subscriber and publisher - as the bot generates output data it publishes it.
+# 
