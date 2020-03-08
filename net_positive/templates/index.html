@@ -6,6 +6,19 @@
   <h1>Pong<h1>
   <body>
    <canvas id='pong' width='600' height='400'></canvas>
-   <script src={% static "pong.js" %}></script>
+   <script defer src={% static "pong.js" %}></script>
+   <script defer src={% static 'Ball.js'%}></script>
+   <script defer src={% static "Game.js" %}></script>
+   <script defer src={% static "Player.js" %}></script>
+   <script defer src={% static "Rectangle.js" %}></script>
+   <script defer src={% static "Vector.js" %}></script>
+   
+  {% comment %} <script src={% static "pong.js" %}></script>
+   <script src={% static 'Ball.js'%}></script>
+   <script src={% static "Game.js" %}></script>
+   <script src={% static "Player.js" %}></script>
+   <script src={% static "Rectangle.js" %}></script>
+   <script src={% static "Vector.js" %}></script> {% endcomment %}
+
   </body>
 </html>
