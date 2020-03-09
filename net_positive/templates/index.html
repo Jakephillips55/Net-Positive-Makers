@@ -5,8 +5,10 @@
   </head>
   <h1>Pong<h1>
   <body>
+  {% block scripts %}
    <canvas id='pong' width='600' height='400'></canvas>
-   <script type ='text/javascript' src={% static "file.js "%}></script>
+    <base href="/" />
+   <script type ='application/javascript' src={% static "file.js"%}></script>
    {% comment %} <script type ='text/javascript' src= {% static "pong.js" %}></script>
    <script type ='text/javascript' src={% static 'Ball.js'%}></script>
    <script type ='text/javascript' src={% static "Game.js" %}></script>
@@ -14,5 +16,6 @@
    <script type ='text/javascript' src={% static "Rectangle.js" %}></script>
    <script type ='text/javascript' src={% static "Vector.js" %}></script> 
      {% endcomment %}
+     {% endblock %} 
   </body>
 </html>
