@@ -90,7 +90,7 @@ class AndrejBotTraining(models.Model):
 
   # hyperparameters
     H = 200 # number of hidden layer neurons
-    batch_size = 10 # every how many episodes to do a param update?
+    batch_size = 2 # every how many episodes to do a param update?
     learning_rate = 1e-4
     gamma = 0.99 # discount factor for reward
     decay_rate = 0.99 # decay factor for RMSProp leaky sum of grad^2
@@ -128,8 +128,8 @@ class AndrejBotTraining(models.Model):
   
 
     def __init__(self):
-      self.H = 200
-      self.batch_size = 10 # every how many episodes to do a param update?
+      self.H = 20
+      self.batch_size = 2 # every how many episodes to do a param update?
       self.learning_rate = 1e-4
       self.gamma = 0.99 # discount factor for reward
       self.decay_rate = 0.99
@@ -205,8 +205,8 @@ class AndrejBotTraining(models.Model):
           if self.episode_number % self.batch_size == 0:
             for k,v in self.model.items():
               g = self.grad_buffer[k] # gradient
-              rmsprop_cache[k] = self.decay_rate * rmsprop_cache[k] + (1 - self.decay_rate) * g**2
-              self.model[k] += self.learning_rate * g / (np.sqrt(rmsprop_cache[k]) + 1e-5)
+              self.rmsprop_cache[k] = self.decay_rate * self.rmsprop_cache[k] + (1 - self.decay_rate) * g**2
+              self.model[k] += self.learning_rate * g / (np.sqrt(self.rmsprop_cache[k]) + 1e-5)
               self.grad_buffer[k] = np.zeros_like(v) # reset batch gradient buffer
       
           # boring book-keeping
