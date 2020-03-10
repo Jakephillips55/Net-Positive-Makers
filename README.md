@@ -37,3 +37,5 @@ Six neural nets were provisioned with different batch size parameters and allowe
 
 To test all dirs do - coverage run -m pytest
 alternatively you can run pyest spec if you do not want to see level of test coverage
+
+running on net_positive/manage.py 'localhost:8000' fixed an issue why
