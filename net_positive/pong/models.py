@@ -33,7 +33,7 @@ class AndrejBot(models.Model):
 
     def __init__(self):
       self.prev_x = None
-      self.model = pickle.load(open('pong/save.p', 'rb'))
+      self.model = pickle.load(open('net_positive/pong/save.p', 'rb'))
       self.count = 0
 
     @classmethod
