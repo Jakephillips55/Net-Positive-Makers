@@ -28,12 +28,12 @@ class SimpleBot(models.Model):
 
 class AndrejBot(models.Model):
     prev_x = None # used in computing the difference frame
-    model = pickle.load(open('pong/save.p', 'rb'))
+    model = pickle.load(open('net_positive/pong/save.p', 'rb'))
     count = 0
 
     def __init__(self):
       self.prev_x = None
-      self.model = pickle.load(open('pong/save.p', 'rb'))
+      self.model = pickle.load(open('net_positive/pong/save.p', 'rb'))
       self.count = 0
 
     @classmethod
@@ -41,7 +41,7 @@ class AndrejBot(models.Model):
       D = 80 * 80
       # preprocess the observation, set input to network to be difference image
       cur_x = AndrejBot.prepro(pixels)
-    
+
       x = cur_x - self.prev_x if self.prev_x is not None else np.zeros(D)
       self.prev_x = cur_x
 
@@ -52,9 +52,9 @@ class AndrejBot(models.Model):
       return move_up
 
     @classmethod
-    def sigmoid(request, x): 
+    def sigmoid(request, x):
       return 1.0 / (1.0 + np.exp(-x)) # sigmoid "squashing" function to interval [0,1]
-      
+
     @classmethod
     def prepro(self, I):
       """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
@@ -62,7 +62,7 @@ class AndrejBot(models.Model):
       image_array = np.asarray(I)
       a = image_array.reshape(320, 320, 3).astype('float32')
       a = cv2.cvtColor(cv2.resize(a,(80,80)), cv2.COLOR_BGR2GRAY)
-     
+
       cv2.imwrite('color_img.jpg', a)
       # print(frame[0][frame != 0])
       print("this is the frame size", a.size)
@@ -79,13 +79,13 @@ class AndrejBot(models.Model):
       self.count += 1
       # I = I[::16] # downsample by factor of 16
       # print(len(I))
-    
-     
+
+
       # I[I == 144] = 0 # erase background (background type 1)
       # I[I == 109] = 0 # erase background (background type 2)
       # I[I != 0] = 1 # everything else (paddles, ball) just set to 1
-    
-      
+
+
       # print(I)
       return I
 
