@@ -28,7 +28,7 @@ class SimpleBot(models.Model):
 
 class AndrejBot(models.Model):
     prev_x = None # used in computing the difference frame
-    model = pickle.load(open('pong/save.p', 'rb'))
+    model = pickle.load(open('net_positive/pong/save.p', 'rb'))
     count = 0
 
     def __init__(self):
