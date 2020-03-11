@@ -95,6 +95,7 @@ class Pong
       if (lastTime) {
         this.update((milliseconds - lastTime) / 1000);
         if (this.isPointOver === true) {
+          this.isPointOver = false;
           this.reset();
         }
         this.draw();
@@ -149,7 +150,7 @@ class Pong
     if (this.ball.velocity.x === 0 && this.ball.velocity.y === 0) {
       this.ball.velocity.x = 300 * (Math.random() > .5 ? 1 : -1);
       this.ball.velocity.y = 300 * (Math.random() * 2 -1);
-      this.ball.velocity.length = 300;
+      this.ball.velocity.length = 150;
     }
   }
 
@@ -181,7 +182,6 @@ class Pong
         this.isPointOver = true;
       }
       this.players[playerId].score++;
-
 
     $(document).ready(function(){
     
@@ -237,7 +237,7 @@ class Game {
       } else if(e.keyCode === 87 && pong.players[0].position.y > 50) {
           pong.players[0].position.y -= 25
       } else if(e.keyCode === 32) {
-        // pong.();
+        pong.start();
       } 
     }
   }
