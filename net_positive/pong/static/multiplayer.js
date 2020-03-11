@@ -107,7 +107,7 @@ class Pong
     const callback = (milliseconds) => {
       if (lastTime) {
         this.update((milliseconds - lastTime) / 1000);
-        this.updateReward();
+        // this.updateReward();
         if (this.isPointOver === true) {
           this.reset();
         }
@@ -121,18 +121,18 @@ class Pong
       this.count += 1;
       // console.log(this.responseReceived);
      
-      if ((this.responseReceived === true) && (this.count % this.throttle === 0)) {
-        // this.draw();
-        // uncomment the above line to see what the bot is seeing
-        this.responseReceived = false;
+      // if ((this.responseReceived === true) && (this.count % this.throttle === 0)) {
+      //   // this.draw();
+      //   // uncomment the above line to see what the bot is seeing
+      //   this.responseReceived = false;
        
-        this.getMove(this.count);
-        if (this.isPointOver === true) {
-          this.gameCount += 1;
-          this.aggregateReward = 0;
-          this.isPointOver = false;
-        }
-      }
+      //   // this.getMove(this.count);
+      //   if (this.isPointOver === true) {
+      //     this.gameCount += 1;
+      //     this.aggregateReward = 0;
+      //     this.isPointOver = false;
+      //   }
+      // }
       
       
     }
@@ -140,29 +140,29 @@ class Pong
     this.reset();
   }
 
-  getMove(){
-    // console.log(this.count);
-    // var d = new Date
-    // console.log(d.getSeconds())
-    // console.log(d.getMilliseconds())
-    var image = 'placeholder'
-    let url = `http://localhost:8000/pong/bot?&bally=${Math.round(this.ball.position.y)}&paddley=${this.players[1].position.y}&reward=${this.aggregateReward}&img=${image}`
-    // let url = `http://net-positive.herokuapp.com/pong/bot?bally=${Math.round(this.ball.position.y)}&paddley=${this.players[1].position.y}&reward=${this.aggregateReward}&img=${image}`
-    var that = this
-    var xmlhttp = new XMLHttpRequest()
-    xmlhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        var myArr = JSON.parse(this.responseText);
-        that._move = myArr['up'];
-        that.botUpdate(that._move);
-        that.responseReceived = true;
-      }
-    };
-    xmlhttp.open('GET', url, true);
+  // getMove(){
+  //   // console.log(this.count);
+  //   // var d = new Date
+  //   // console.log(d.getSeconds())
+  //   // console.log(d.getMilliseconds())
+  //   var image = 'placeholder'
+  //   let url = `http://localhost:8000/pong/bot?&bally=${Math.round(this.ball.position.y)}&paddley=${this.players[1].position.y}&reward=${this.aggregateReward}&img=${image}`
+  //   // let url = `http://net-positive.herokuapp.com/pong/bot?bally=${Math.round(this.ball.position.y)}&paddley=${this.players[1].position.y}&reward=${this.aggregateReward}&img=${image}`
+  //   var that = this
+  //   var xmlhttp = new XMLHttpRequest()
+  //   xmlhttp.onreadystatechange = function() {
+  //     if (this.readyState == 4 && this.status == 200) {
+  //       var myArr = JSON.parse(this.responseText);
+  //       that._move = myArr['up'];
+  //       that.botUpdate(that._move);
+  //       that.responseReceived = true;
+  //     }
+  //   };
+  //   xmlhttp.open('GET', url, true);
 
-    xmlhttp.send();
+  //   xmlhttp.send();
     
-  }
+  // }
 
   collide(player, ball) {
     if (player.left < ball.right && player.right > ball.left && player.top < ball.bottom && player.bottom > ball.top) {
@@ -321,8 +321,8 @@ class Game {
   constructor(pong) 
   {
     this.pong = pong;
-    this.playerVsAi = true;
-    this.playerVsPlayer = false;
+    this.playerVsAi = false;
+    this.playerVsPlayer = true;
     this.player1Mouse = false;
     this.player2Mouse = false;
   }
@@ -336,10 +336,10 @@ class Game {
       this.keyboard(0);
       // bot
     } else if (this.playerVsPlayer && this.player2Mouse) {
-      this.mouse(1);
+      // this.mouse(1);
       this.keyboard(0);
     } else if (this.playerVsPlayer && this.player1Mouse) {
-      this.mouse(0);
+      // this.mouse(0);
       this.keyboard(1);
     } else if (this.playerVsPlayer) {
       this.keyboardPlayerPlayer();
