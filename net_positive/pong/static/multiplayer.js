@@ -59,7 +59,7 @@ class Player extends Rectangle
 {
   constructor()
   {
-    super(7 , 32);
+    super(7 , 50);
     this.score = 0;
     this.game = 0;
     this.velocity = new Vector;
@@ -120,13 +120,21 @@ class Pong
   draw() {
     this._context.fillStyle = '#000';
     this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
-
+    this.drawNet();
     this.drawRectangle(this.ball);
     this.players.forEach(player => this.drawRectangle(player))
   }
 
+  drawNet() {
+    this._context.setLineDash([5, 5]);
+    this._context.moveTo(300,0);
+    this._context.lineTo(300,400);
+    this._context.strokeStyle = '#FF00FF';
+    this._context.stroke();
+  }
+
   drawRectangle(rectangle) {
-    this._context.fillStyle = '#fff';
+    this._context.fillStyle = '#FF00FF';
     this._context.fillRect(rectangle.left, rectangle.top, rectangle.size.x, rectangle.size.y);
   }
 
@@ -150,7 +158,7 @@ class Pong
     if (this.ball.velocity.x === 0 && this.ball.velocity.y === 0) {
       this.ball.velocity.x = 300 * (Math.random() > .5 ? 1 : -1);
       this.ball.velocity.y = 300 * (Math.random() * 2 -1);
-      this.ball.velocity.length = 150;
+      this.ball.velocity.length = 200;
     }
   }
 
@@ -228,13 +236,13 @@ class Game {
     window.addEventListener('keydown', keyboardHandlerFunction); 
 
     function keyboardHandlerFunction(e) {
-      if(e.keyCode === 40 && pong.players[1].position.y < (pong._canvas.height - 50) ) {
+      if(e.keyCode === 40 && pong.players[1].position.y < (pong._canvas.height - 25) ) {
         pong.players[1].position.y += 25
-      } else if(e.keyCode === 38 && pong.players[1].position.y > 50) {
+      } else if(e.keyCode === 38 && pong.players[1].position.y > 25) {
           pong.players[1].position.y -= 25
-      } else if(e.keyCode === 83 && pong.players[0].position.y < (pong._canvas.height - 50) ) {
+      } else if(e.keyCode === 83 && pong.players[0].position.y < (pong._canvas.height - 25) ) {
           pong.players[0].position.y += 25
-      } else if(e.keyCode === 87 && pong.players[0].position.y > 50) {
+      } else if(e.keyCode === 87 && pong.players[0].position.y > 25) {
           pong.players[0].position.y -= 25
       } else if(e.keyCode === 32) {
         pong.start();
