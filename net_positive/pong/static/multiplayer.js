@@ -70,27 +70,15 @@ class Pong
 {
   constructor(canvas)
   {
-    this._move = "";
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
-    this.pixelData = this._context.getImageData(0, 0, 600, 400);
     
-    // console.log(this.pixelData);
-   
-
-
     this.ball = new Ball;
     this.throttle = 1;
     this.gameCount = 0;
 
     this.done = false;
-
     this.isPointOver = false;
-
-    this.aggregateReward = 0;
-
-    this.responseReceived = true;
-  
 
     this.players = [
       new Player,
@@ -103,11 +91,9 @@ class Pong
 
 
     let lastTime;
-    this.count = 99;
     const callback = (milliseconds) => {
       if (lastTime) {
         this.update((milliseconds - lastTime) / 1000);
-        // this.updateReward();
         if (this.isPointOver === true) {
           this.reset();
         }
@@ -116,53 +102,10 @@ class Pong
       
       lastTime = milliseconds;
       requestAnimationFrame(callback);
-      
-      
-      this.count += 1;
-      // console.log(this.responseReceived);
-     
-      // if ((this.responseReceived === true) && (this.count % this.throttle === 0)) {
-      //   // this.draw();
-      //   // uncomment the above line to see what the bot is seeing
-      //   this.responseReceived = false;
-       
-      //   // this.getMove(this.count);
-      //   if (this.isPointOver === true) {
-      //     this.gameCount += 1;
-      //     this.aggregateReward = 0;
-      //     this.isPointOver = false;
-      //   }
-      // }
-      
-      
     }
     callback();
     this.reset();
   }
-
-  // getMove(){
-  //   // console.log(this.count);
-  //   // var d = new Date
-  //   // console.log(d.getSeconds())
-  //   // console.log(d.getMilliseconds())
-  //   var image = 'placeholder'
-  //   let url = `http://localhost:8000/pong/bot?&bally=${Math.round(this.ball.position.y)}&paddley=${this.players[1].position.y}&reward=${this.aggregateReward}&img=${image}`
-  //   // let url = `http://net-positive.herokuapp.com/pong/bot?bally=${Math.round(this.ball.position.y)}&paddley=${this.players[1].position.y}&reward=${this.aggregateReward}&img=${image}`
-  //   var that = this
-  //   var xmlhttp = new XMLHttpRequest()
-  //   xmlhttp.onreadystatechange = function() {
-  //     if (this.readyState == 4 && this.status == 200) {
-  //       var myArr = JSON.parse(this.responseText);
-  //       that._move = myArr['up'];
-  //       that.botUpdate(that._move);
-  //       that.responseReceived = true;
-  //     }
-  //   };
-  //   xmlhttp.open('GET', url, true);
-
-  //   xmlhttp.send();
-    
-  // }
 
   collide(player, ball) {
     if (player.left < ball.right && player.right > ball.left && player.top < ball.bottom && player.bottom > ball.top) {
@@ -194,8 +137,6 @@ class Pong
     this.players[0].position.y = this._canvas.height / 2;
     this.players[1].position.y = this._canvas.height / 2;
 
-    // console.log(`Player 1 Score: ${this.players[0].score} Player 2 Score: ${this.players[1].score}`)
-
     if (this.players[0].score < 21 && this.players[1].score < 21){
       this.start()    
     } else {
@@ -220,31 +161,16 @@ class Pong
         playerId = 0;
       }
       this.players[playerId].game += 1
-      // console.log(`Player 1 Game: ${this.players[0].game} Player 2 Game: ${this.players[1].game}`)
       this.players[0].score = 0;
       this.players[1].score = 0;
       this.done = false;
       this.start();
   }
 
-  updateReward() {
-    
-    if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
-      if (this.ball.velocity.x < 0) {
-        this.aggregateReward += 1
-      } else {
-        this.aggregateReward += -1;
-      }
-    }
-  }
-
-
-
   update(deltatime) {
     this.ball.position.x += this.ball.velocity.x * deltatime;
     this.ball.position.y += this.ball.velocity.y * deltatime;
  
-  
     if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
       var playerId;
       if (this.ball.velocity.x < 0) {
@@ -261,60 +187,35 @@ class Pong
     
       updateScore()
 
-    
-    
-    function updateScore(){
-    
-      $("#player1tally").text(
-        pong.players[0].score
-      )
-      $("#player2tally").text(
-        pong.players[1].score
-      )
-      $("#player1-game-tally").text(
-        pong.players[0].game
-      )
-      $("#player2-game-tally").text(
-        pong.players[1].game
-      )
-    }
-  })
+      function updateScore(){
+      
+        $("#player1tally").text(
+          pong.players[0].score
+        )
+        $("#player2tally").text(
+          pong.players[1].score
+        )
+        $("#player1-game-tally").text(
+          pong.players[0].game
+        )
+        $("#player2-game-tally").text(
+          pong.players[1].game
+        )
+      }
+    })
   }
-  
     if (this.ball.top < 0 || this.ball.bottom > this._canvas.height) {
       this.ball.velocity.y = -this.ball.velocity.y;
     }
-
-
-    
     this.players.forEach(player => this.collide(player, this.ball));
-
     
+    this.draw();
   }
-
-  botJS() {
-    if (this.ball.position.y <= this.players[1].position.y) {
-      this.players[1].position.y -= 20
-    } else  {
-      this.players[1].position.y += 20
-    }
-  }
-
-  botUpdate(moveUp) {
-    if(moveUp === true) {
-        this.players[1].position.y -= 20
-    } else {
-        this.players[1].position.y += 20
-    }
-  }
-
 }
 
 
 const canvas = document.getElementById('pong');
 const pong = new Pong(canvas);
-
-
 
 class Game {
 
@@ -336,7 +237,7 @@ class Game {
       } else if(e.keyCode === 87 && pong.players[0].position.y > 50) {
           pong.players[0].position.y -= 25
       } else if(e.keyCode === 32) {
-        pong.start();
+        // pong.();
       } 
     }
   }
