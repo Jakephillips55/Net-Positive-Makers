@@ -67,7 +67,7 @@
   {
     constructor()
     {
-      super(7, 30);
+      super(8, 32);
       this.score = 0;
       this.game = 0;
       this.velocity = new Vector;
@@ -169,15 +169,11 @@
     getMoveWS(){
       var image = this._context.getImageData(0, 0, 320, 320);
       // console.log(image)
-      var d2 = new Date
-      console.log('create array')
-      console.log(d2.getSeconds())
-      console.log(d2.getMilliseconds())
+      var t = new Date
+      console.log(t.getSeconds())
+      console.log(t.getMilliseconds())
       var imageArray = Array.from(image.data)
       var d2 = new Date
-      console.log('filter out alpha and extras')
-      console.log(d2.getSeconds())
-      console.log(d2.getMilliseconds())
       imageArray = imageArray.filter(function(_, i) {
         return (i + 1) % 4;
       })
@@ -188,23 +184,39 @@
         return (i + 1) % 2;
       
       })
-      
-      console.log(imageArray);
+
+      var count = 0
 
       for (var i = 0, len = imageArray.length; i < len; i++) {
-        if (imageArray[i] > 0) {
+        if (imageArray[i] < 127.5) {
+          imageArray[i] = 0;
+        }
+        else if (imageArray[i] == 127.5)
+        {
+          if (count % 2 == 0) {
+
+            imageArray[i] = 1;
+            count += 1;
+          }
+        }
+        else {
           imageArray[i] = 1;
         }
       }
 
-      imageArray = imageArray.join('')
-  
-      var d2 = new Date
-          console.log('btoa')
-          console.log(d2.getSeconds())
-          console.log(d2.getMilliseconds())
+      var imageString = imageArray.join('')
 
-      var imageArrayString = btoa(imageArray)
+      var regex = /0000000000000000000000000000000000000000/gi
+
+      imageString = imageString.replace(regex, 'x');
+      // console.log(imageString)
+      
+      // var d2 = new Date
+      // console.log('btoa')
+      // console.log(d2.getSeconds())
+      // console.log(d2.getMilliseconds())
+
+      // // var imageString = btoa(imageString)
 
       var bally = Math.round(this.ball.position.y);
       var paddley = this.players[1].position.y;
@@ -213,7 +225,7 @@
         
       this.BotSocket.send(JSON.stringify({
         "court": court,
-        "image": imageArrayString,
+        "image": imageString,
         "done": this.done,
         }));
 
@@ -248,7 +260,7 @@
       if (player.left < ball.right && player.right > ball.left && player.top < ball.bottom && player.bottom > ball.top) {
         const length = ball.velocity.length
         ball.velocity.x = -ball.velocity.x;
-        ball.velocity.y += 300 * (Math.random() - .5);
+        ball.velocity.y += ball.velocity.y * (Math.random() - 0.5);
         ball.velocity.length = length * 1.05; 
       }
     }
@@ -285,7 +297,7 @@
       if (this.ball.velocity.x === 0 && this.ball.velocity.y === 0) {
         this.ball.velocity.x = 300 * (Math.random() > .5 ? 1 : -1);
         this.ball.velocity.y = 300 * (Math.random() > .5 ? 1 : -1);
-        this.ball.velocity.length = 50;
+        this.ball.velocity.length = 30;
       }
     }
 

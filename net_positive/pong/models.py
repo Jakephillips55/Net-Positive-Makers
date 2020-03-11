@@ -28,12 +28,12 @@ class SimpleBot(models.Model):
 
 class AndrejBot(models.Model):
     prev_x = None # used in computing the difference frame
-    model = pickle.load(open('pong/training/gym_trained_andrej.p', 'rb'))
+    model = pickle.load(open('pong/training/andrej_gold.p', 'rb'))
     count = 0
 
     def __init__(self):
       self.prev_x = None
-      self.model = pickle.load(open('pong/training/gym_trained_andrej.p', 'rb'))
+      self.model = pickle.load(open('pong/training/andrej_gold.p', 'rb'))
       self.count = 0
 
     @classmethod
@@ -58,22 +58,48 @@ class AndrejBot(models.Model):
     @classmethod
     def prepro(self, I):
       """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
-      image_array = np.asarray(I)
-      a = image_array.reshape(320, 320).astype('float32')
-      a = cv2.resize(a,(80,80))
+     
+      I = np.asarray(I)
+
+      # if np.count_nonzero(I==1) != 544:
+      #   with open('final_file.csv', mode='w') as final_file: #store the pixels
+      #       final_writer = csv.writer(final_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+      #       final_writer.writerow(I)
+    
+
+      I = I.reshape(320, 320).astype('float32')
+
+
+      print("number of ones", np.count_nonzero(I==1))
+
+      I = cv2.resize(I,(80,80))
+     
+      
+
+
       # a = cv2.cvtColor(cv2.resize(a,(80,80)), cv2.COLOR_BGR2GRAY)
       # cv2.imwrite('color_img.jpg', a)
       # print(frame[0][frame != 0])
-      print("this is the frame size", a.size)
+    
       # ret, a = cv2.threshold(a, 127, 255, cv2.THRESH_BINARY) # et is useless
-      # a[a == 255] = 1
-      I = a.ravel()
-      print(len(I))
+      I[I !=1] = 0
+     
 
-      # if self.count == 20 :
+      print("number of ones", np.count_nonzero(I==1.0))
+      I = I.ravel()
+    
+      # if np.count_nonzero(I==1.0) != 34:
+  
+      # if self.count == 20:
       #   with open('final_file.csv', mode='w') as final_file: #store the pixels
-      #         final_writer = csv.writer(final_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-      #         final_writer.writerow(I)
+      #       final_writer = csv.writer(final_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+      #       final_writer.writerow(I)
+     
+
+      
+
+      print("this is the frame size", I.size)
+      print(len(I))
 
       self.count += 1
       return I
@@ -272,16 +298,16 @@ class AndrejBotTraining(models.Model):
       # print(frame[0][frame != 0])
       print("this is the frame size", a.size)
       # ret, a = cv2.threshold(a, 127, 255, cv2.THRESH_BINARY) # et is useless
-      # a[a == 255] = 1
-      I = a.ravel()
-      print(len(I))
+      a[a >= 0.5] = 1
+      a = a.ravel()
+      print(len(a))
 
       if self.count == 20 :
         with open('final_file.csv', mode='w') as final_file: #store the pixels
               final_writer = csv.writer(final_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-              final_writer.writerow(I)
+              final_writer.writerow(a)
       
-      return I
+      return a
     
     @classmethod
     def discount_rewards(self, r):
