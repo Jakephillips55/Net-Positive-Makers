@@ -4,22 +4,22 @@ from django.http import JsonResponse
 # Create your tests here.
 from django.views.generic import TemplateView
 
-# class Test_simple_bot():
-#     def simple_bot_test(request, court):
-#         """test that bally and paddley are 
-#         printing the correct responses"""
-#         if int(court["bally"]) <= int(court["paddley"]):
-#           print(True)
-#           return True
-#         else:
-#           print(False)
-#           return False
-#     print('Build')
+class YourTestClass(TestCase):
+    def setUp(self):
+        # Setup run before every test method.
+        pass
 
-#     assert('True is not True')
+    def tearDown(self):
+        # Clean up run after every test method.
+        pass
+
+    def test_something_that_will_pass(self):
+        self.assertFalse(False)
+
+    def test_something_that_will_fail(self):
+        self.assertTrue(False)
 
 if __name__ == "__main__":
-      HomeView()
-      SearchFormTestCase()
+      TestClass();
   # test_make_move()
 print("Everything passed")
