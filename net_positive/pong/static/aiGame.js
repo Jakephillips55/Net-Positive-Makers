@@ -238,9 +238,6 @@ class Vector
       court = '';
     }
 
-
-
-
     getMove(){
       var image = 'placeholder'
       var that = this
@@ -340,7 +337,6 @@ class Vector
         }
         this.players[playerId].score++;
       }
-      
       $(document).ready(function(){
     
         updateScore()
@@ -422,7 +418,9 @@ class Vector
     keyboard(player){
       window.addEventListener('keydown', keyboardHandlerFunction); 
       function keyboardHandlerFunction(e) {
-        if(e.keyCode === 40 && pong.players[player].position.y < (pong._canvas.height - 50) ) {
+        if(e.keyCode === 40 && pong.players[player].position.y < 
+          (pong._canvas.height - 50)) 
+        {
           pong.players[player].position.y += 25
         }
         else if(e.keyCode === 38 && pong.players[player].position.y > 50) {

@@ -18,7 +18,8 @@ describe('Pong', function() {
     ball = new Ball()
     player = new Player()
   })
-
+  
+  
   describe("canvas dimensions", function() {
     it("draws the correct height", function() {
       expect(pong._canvas.height).toEqual(150)
@@ -52,7 +53,20 @@ describe('Pong', function() {
       expect(pong.players[1].position.y).toEqual(75)
     })
   })
-  
+
+  // describe('Start', function() {
+  //   var ball 
+  //   var velocity
+
+  //   beforeEach(function(){
+  //     ball = new Ball()
+  //     velocity = new Vector();
+
+  //   })
+  //   expect(ball.velocity.x).toEqual(0)
+  // })
+
+  })  
   describe("getMove", function() {
    it("should communicate data with XHR request", function() {
 
@@ -74,18 +88,35 @@ describe('Pong', function() {
   })
 
   describe('Player', function() { 
-
+    var player
     beforeEach(function() {
-        player = new Player(); 
+        player = new Player()
+    }) 
+
+    it("starts at score count of 0", function() {
+        expect(player.score).toEqual(0)
     }); 
 
-    it('starts at score count of 0', function(){
-        expect(player.score).toEqual(0); 
+    it("starts at game count of 0", function() {
+      expect(player.game).toEqual(0)
     }); 
 
-    it('starts at game count of 0', function(){
-      expect(player.game).toEqual(0); 
-    }); 
+    it('Score is increasable', function() {
+     let check_increasable = player.score;
+    
+      for (var score = 0; score < check_increasable.length - 1; score++) {
+          if (check_increasable[score] >= check_increasable[score + 1] || 
+            Number.isNaN(check_increasable[score]) || 
+            Number.isNaN(check_increasable[num + 1])) {
+              return false;
+          }
+      }
+    
+      return true;
+    
 
-  });
-})
+    // it('Can increase the score', function(){
+    //   expect(player.score.check_increasable).toEqual(1)
+      
+    });
+  })
