@@ -54,34 +54,22 @@ describe('Pong', function() {
     })
   })
 
-  // describe('Start', function() {
-  //   var ball 
-  //   var velocity
-
-  //   beforeEach(function(){
-  //     ball = new Ball()
-  //     velocity = new Vector();
-
-  //   })
-  //   expect(ball.velocity.x).toEqual(0)
-  // })
-
   })  
   describe("getMove", function() {
-   it("should communicate data with XHR request", function() {
-
+   it("should communicate data with XMLHttprequest", function() {
+    var pongtest = new Pong
     var xhr = {
 
        open: jasmine.createSpy('open')
    };
-
+   
    XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
    XMLHttpRequest.and.callFake(function () {
        return xhr;
 
    });
-
-   submit();
+   expect(pongtest.getMove().toHaveBeenCalled());
+  //  submit();
 
    expect(xhr.open).toHaveBeenCalled(); 
     })
@@ -101,7 +89,7 @@ describe('Pong', function() {
       expect(player.game).toEqual(0)
     }); 
 
-    it('Score is increasable', function() {
+    it('Test that score is increasable', function() {
      let check_increasable = player.score;
     
       for (var score = 0; score < check_increasable.length - 1; score++) {
@@ -113,10 +101,7 @@ describe('Pong', function() {
       }
     
       return true;
-    
-
-    // it('Can increase the score', function(){
-    //   expect(player.score.check_increasable).toEqual(1)
       
     });
+
   })
