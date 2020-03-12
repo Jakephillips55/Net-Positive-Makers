@@ -30,21 +30,21 @@ describe('Pong', function() {
 
   describe("ball", function() {
     it("renders in the correct size", function() {
-      expect(ball.size.x).toEqual(10)
-      expect(ball.size.y).toEqual(10)
+      expect(ball.size.x).toEqual(4)
+      expect(ball.size.y).toEqual(8)
     })
   })
 
   describe("player", function() {
     it("it renders in the correct size", function() {
       player = new Player()
-      expect(player.size.x).toEqual(20)
-      expect(player.size.y).toEqual(100)
+      expect(player.size.x).toEqual(8)
+      expect(player.size.y).toEqual(32)
     })
 
     it("renders the players in the correct x position", function() {
-      expect(pong.players[0].position.x).toEqual(20)
-      expect(pong.players[1].position.x).toEqual(130)
+      expect(pong.players[0].position.x).toEqual(36)
+      expect(pong.players[1].position.x).toEqual(114)
     })
 
     it("renders the players in the correct y position", function() {
@@ -53,23 +53,39 @@ describe('Pong', function() {
     })
   })
   
-  // describe("getMove", function() {
-  //  it("should communicate data with XHR request", function() {
+  describe("getMove", function() {
+   it("should communicate data with XHR request", function() {
 
-  //   var xhr = {
+    var xhr = {
 
-  //      open: jasmine.createSpy('open')
-  //  };
+       open: jasmine.createSpy('open')
+   };
 
-  //  XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
-  //  XMLHttpRequest.and.callFake(function () {
-  //      return xhr;
+   XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
+   XMLHttpRequest.and.callFake(function () {
+       return xhr;
 
-  //  });
+   });
 
-  //  submit();
+   submit();
 
-  //  expect(xhr.open).toHaveBeenCalled(); 
-  //   })
-  // })
-});
+   expect(xhr.open).toHaveBeenCalled(); 
+    })
+  })
+
+  describe('Player', function() { 
+
+    beforeEach(function() {
+        player = new Player(); 
+    }); 
+
+    it('starts at score count of 0', function(){
+        expect(player.score).toEqual(0); 
+    }); 
+
+    it('starts at game count of 0', function(){
+      expect(player.game).toEqual(0); 
+    }); 
+
+  });
+})

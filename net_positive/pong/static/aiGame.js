@@ -340,6 +340,7 @@ class Vector
         }
         this.players[playerId].score++;
       }
+      
       $(document).ready(function(){
     
         updateScore()
