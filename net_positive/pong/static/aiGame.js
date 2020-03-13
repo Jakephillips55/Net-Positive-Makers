@@ -418,13 +418,11 @@ class Vector
     keyboard(player){
       window.addEventListener('keydown', keyboardHandlerFunction); 
       function keyboardHandlerFunction(e) {
-        if(e.keyCode === 40 && pong.players[player].position.y < 
-          (pong._canvas.height - 50)) 
-        {
-          pong.players[player].position.y += 25
+        if(e.keyCode === 40 && pong.players[player].position.y <  (pong._canvas.height - 50))
+         { pong.players[player].position.y += 25
         }
-        else if(e.keyCode === 38 && pong.players[player].position.y > 50) {
-            pong.players[player].position.y -= 25
+        else if(e.keyCode === 38 && pong.players[player].position.y > 50) 
+          { pong.players[player].position.y -= 25
         } else if(e.keyCode === 32) {
             pong.start();
         } 
