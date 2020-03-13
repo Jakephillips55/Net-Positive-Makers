@@ -28,15 +28,24 @@ body{
   z-index: -1;
   display: flex;
 }
+#pong {
+  border: 10px solid;
+  background-color: #141414;
+  border: 2px solid #141414;
+  box-shadow: 0 0 5px 5px #141414;
+  border-radius: 10px;
+}
 
+#music {
+  display: none;
+}
 
 #game{
   text-align: center;
   width: 50%;
-  padding: 100px 0 0 0; 
+  padding: 100px 0 0 0;
   
 }
-
 #left-container{
   display: flex;
   flex-direction: column;
@@ -48,6 +57,7 @@ body{
   width: 25%;
   text-align: center;
   font-size: 20px;
+  text-shadow: 1.25px 1.25px;
 }
 
 #right-container {
@@ -59,6 +69,7 @@ body{
   width: 25%;
   text-align: center;
   font-size: 20px;
+  text-shadow: 1.25px 1.25px;
 }
 
 .container-fluid {
@@ -72,41 +83,75 @@ body{
   align-items: space-between;
   height: 320px;
   width: 100%;
-  color: magenta;
+  color: white;
 }
 
 #bot-1 {
-  padding: 150px 0 0 75px; 
+  padding: 150px 0 0 0; 
   width:20%;
   font-size: 15px;
 }
 #bot-2 {
-  padding: 150px 0 0 50px; 
+  padding: 150px 0 0 0; 
   width:20%;
   font-size: 15px;
 }
 #bot-3 {
-  padding: 150px 0 0 50px; 
+  padding: 150px 0 0 0; 
   width:20%;
   font-size: 15px;
 }
 #bot-4 {
-  padding: 150px 0 0 50px; 
+  padding: 150px 0 0 0; 
   width:20%;
   font-size: 15px;
 }
 #bot-5 {
-  padding: 150px 0 0 50px; 
+  padding: 150px 0 0 0; 
   width:20%;
   font-size: 15px;
 }
 
-button {
-  border-color: transparent;
-  background-color: Transparent;
-  outline: none;
+#traininggame {
+  padding: 50px 0 0 0;
 }
+
+button {
+    font-family: 'PressStart2PRegular';
+    font-size: 25px;
+    color: rgb(240, 97, 240);
+    background-color: transparent;
+    border-color: transparent;
+    font-weight: 400;
+    letter-spacing: 8px;
+  }
+
   
+  .difficulty{
+    display: flex;
+    flex-direction: row;
+    align-items: space-between;
+    height: 320px;
+    width: 100%;
+  }
+
+  #easy {
+    padding: 150px 0 0 90px; 
+    width:31%;
+    outline: none;
+  }
+  
+  #medium{
+    padding: 150px 0 0 90px; 
+    width:31%;
+    outline: none;
+  }
+
+  #hard{
+    padding: 150px 0 0 90px; 
+    width:31%;
+    outline: none;
+  }
 
 
 
