@@ -69,7 +69,8 @@ describe('Pong', function() {
 
    });
    expect(pongtest.getMove().toHaveBeenCalled());
-  //  submit();
+  // 
+  // submit();
 
    expect(xhr.open).toHaveBeenCalled(); 
     })

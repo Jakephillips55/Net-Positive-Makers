@@ -2,13 +2,13 @@ import os.path
 from pathlib import Path
 
 def test_files():
-    if os.path.isfile('../Net-Positive-Makers/net_positive/pong/urls.py'):
+    if os.path.isfile('../Net-Positive-Makers/pygym/RMSprop/episode_file.csv'):
         print ('File exists')
     else:
         assert(print('File not existent'))
 
 def test_path():
-    if Path('../Net-Positive-Makers/net_positive/pong/urls.py').is_file():
+    if Path('../Net-Positive-Makers/pygym/RMSprop/episode_file.csv').is_file():
         print ("File exist2")
     else:
         assert(print("File not exist2"))
