@@ -69,32 +69,30 @@ class Vector
   {
     constructor(canvas)
     {
-      var trainingSession = "training";
     
       this.BotSocket = new WebSocket(
-          'ws://' + window.location.host +
-          '/ws/pong/' + trainingSession + '/');
+        'ws://' + window.location.host + '/ws/pong/training/');
 
       var that = this
       this.BotSocket.onmessage = function(e) {
-          var data = JSON.parse(e.data);
+        var data = JSON.parse(e.data);
+        that.repeatActionCountBot = 0;
+        var move = data['move'];
+        var trainingOpponent = data['trainingopponent']
+        if (trainingOpponent === "false"){
+          that._moveUpBot = move;
+          that.responseReceivedBot = true;
           that.repeatActionCountBot = 0;
-          var move = data['move'];
-          var trainingOpponent = data['trainingopponent']
-          if (trainingOpponent === "false"){
-            that._moveUpBot = move;
-            that.responseReceivedBot = true;
-            that.repeatActionCountBot = 0;
-          }
-          else { 
-            that._moveUpTrainingOpponent = move;
-            that.responseReceivedTrainingOpponent = true;
-            that.repeatActionCountTrainingOpponent = 0;
-          }
+        }
+        else { 
+          that._moveUpTrainingOpponent = move;
+          that.responseReceivedTrainingOpponent = true;
+          that.repeatActionCountTrainingOpponent = 0;
+        }
       };
 
       this.BotSocket.onclose = function(e) {
-          console.error('Chat socket closed unexpectedly');
+        console.error('Chat socket closed unexpectedly');
       };
 
       this._moveUpBot = '';
@@ -155,11 +153,11 @@ class Vector
             // this.draw();
             // uncomment the above line to see what the bot is seeing
             this.responseReceivedBot = false;
-            this.getMoveWS();
+            this.getMove();
           }
           if ((this.training === true ) && (this.responseReceivedTrainingOpponent === true)) {
             this.responseReceivedTrainingOpponent = false;
-            this.getOpponentMove();
+            this.getTrainingOpponentMove();
           }
         }   
       }
@@ -168,45 +166,46 @@ class Vector
       this.reset();
     }
 
-    getMoveWS(){
+    getMove(){
+      this.BotSocket.send(JSON.stringify({
+        "court": this.retrieveGameData(1),
+        "image": this.retrievePixelData(),
+        "done": this.done,
+        "bot": this.bot,
+        "trainingopponent": "false"
+        }));
+      this.done = false;
+    }
 
+    getTrainingOpponentMove(){
+      this.BotSocket.send(JSON.stringify({
+        "court": this.retrieveGameData(0),
+        "image": "dummy",
+        "done": "dummy",
+        "bot": "nodevak-djokovic",
+        "trainingopponent": "true"
+        }));
+    }
+
+    retrieveGameData(player){
+      var bally = Math.round(this.ball.position.y);
+      var paddley = this.players[player].position.y;
+      var reward = this.aggregateReward;
+      var court = `{"bally": ${bally}, "paddley": ${paddley}, "reward": ${reward}}`;
+      return court;
+    }
+
+    retrievePixelData(){
       var image = this._context.getImageData(0, 0, 320, 320);
-      
-      var imageArray = Array.from(image.data)
-    
-      imageArray = imageArray.filter(function(_, i) {
-        return (i + 1) % 4;
-      })
-      imageArray = imageArray.filter(function(_, i) {
-        return (i + 1) % 3;
-      })
-      imageArray = imageArray.filter(function(_, i) {
-        return (i + 1) % 2;
-      
-      })
-      
-      var everyOtherTime = 0
+      var imageArray = Array.from(image.data);
+      imageArray = this.rgbaToBinary(imageArray);
+      var imageString = imageArray.join('');
+      imageString = this.compressString(imageString);
+      return imageString;
+    }
 
-      for (var i = 0, len = imageArray.length; i < len; i++) {
-        if (imageArray[i] < 127.5) {
-          imageArray[i] = 0;
-        }
-        else if (imageArray[i] == 127.5)
-        {
-          if (everyOtherTime % 2 == 0) {
-
-            imageArray[i] = 1;
-            everyotherTime += 1;
-          }
-        }
-        else {
-          imageArray[i] = 1;
-        }
-      }
-
-      var imageString = imageArray.join('')
-
-      // compress pixel data
+    compressString(imageString){
+      //first round of compression
       var regex80 = /00000000000000000000000000000000000000000000000000000000000000000000000000000000/gi
       var regex40 = /0000000000000000000000000000000000000000/gi
       var regex20 = /00000000000000000000/gi
@@ -217,42 +216,32 @@ class Vector
       imageString = imageString.replace(regex20, 'y');
       imageString = imageString.replace(regex10, 'z');
       imageString = imageString.replace(regex4, 'a');
-      // compress it some more
+      // second round of compression
       var regexW = /wwwwwwwwwwwwwwwwwwww/gi
       imageString = imageString.replace(regexW, 'v');
-
-   
-      var bally = Math.round(this.ball.position.y);
-      var paddley = this.players[1].position.y;
-      var reward = this.aggregateReward;
-      var court = `{"bally": ${bally}, "paddley": ${paddley}, "reward": ${reward}}`;
-        
-      this.BotSocket.send(JSON.stringify({
-        "court": court,
-        "image": imageString,
-        "done": this.done,
-        "bot": this.bot,
-        "trainingopponent": "false"
-        }));
-
-      court = '';
-      this.done = false;
+      return imageString;
     }
 
-    getOpponentMove(){
-      var bally = Math.round(this.ball.position.y);
-      var paddley = this.players[0].position.y;
-      var court = `{"bally": ${bally}, "paddley":${paddley}, "reward": "dummy"}`;
-
-      this.BotSocket.send(JSON.stringify({
-        "court": court,
-        "done": "dummy",
-        "image": "dummy",
-        "bot": "nodevak-djokovic",
-        "trainingopponent": "true"
-        }));
-
-      court = '';
+    rgbaToBinary(imageArray){
+      imageArray = imageArray.filter(function(_, i) {
+        return (i + 1) % 4;
+      })
+      imageArray = imageArray.filter(function(_, i) {
+        return (i + 1) % 3;
+      })
+      imageArray = imageArray.filter(function(_, i) {
+        return (i + 1) % 2;
+      })
+      
+      for (var i = 0, len = imageArray.length; i < len; i++) {
+        if (imageArray[i] < 127.5) {
+          imageArray[i] = 0;
+        }
+        else {
+          imageArray[i] = 1;
+        }
+      }
+      return imageArray;
     }
 
     collide(player, ball) {
