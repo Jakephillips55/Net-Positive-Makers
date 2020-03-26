@@ -233,9 +233,19 @@ class Vector
         return (i + 1) % 2;
       })
       
+      var everyOtherTime = 0
+
       for (var i = 0, len = imageArray.length; i < len; i++) {
         if (imageArray[i] < 127.5) {
           imageArray[i] = 0;
+        }
+        else if (imageArray[i] == 127.5)
+        {
+          if (everyOtherTime % 2 == 0) {
+
+            imageArray[i] = 1;
+            everyotherTime += 1;
+          }
         }
         else {
           imageArray[i] = 1;
