@@ -88,12 +88,8 @@ class Pong {
     
     this.BotSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
-      if (data['trainingopponent'] === "true") {
-        that.storeMove(data['move'], that.players[0])
-      }
-      else { 
-        that.storeMove(data['move'], that.players[1])
-      }
+      var playerID = parseInt(data.playerID)
+      that.storeMove(data['move'], that.players[playerID])
     }
 
     this.BotSocket.onclose = function(e) {

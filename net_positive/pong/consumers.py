@@ -40,49 +40,49 @@ class PongConsumer(WebsocketConsumer):
           move = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
           self.send(text_data=json.dumps({
           'move': move,
-          'trainingopponent': trainingopponent
+          'playerID': 0
           }))
         else:
           if bot == "student":
             move = AndrejBotTraining.andrej_training(image, reward, done)
             self.send(text_data=json.dumps({
             'move': move,
-            'trainingopponent': trainingopponent
+            'playerID': 1
             }))
 
           if bot == "steffi-graph":
             move = PerfectBot.perfect_bot_ws(bally, paddley)
             self.send(text_data=json.dumps({
             'move': move,
-            'trainingopponent': trainingopponent
+            'playerID': 1
             }))
           
           if bot == "nodevak-djokovic":
             move = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
             self.send(text_data=json.dumps({
             'move': move,
-            'trainingopponent': trainingopponent
+            'playerID': 1
           }))
 
           if bot == "rl-federer":
             move = AndrejBot.andrej_bot(image)
             self.send(text_data=json.dumps({
             'move': move,
-            'trainingopponent': trainingopponent 
+            'playerID': 1 
             }))
           
           if bot == "andrai-agassi":
             move = FaultyBot.faulty_bot_ws(bally, paddley)
             self.send(text_data=json.dumps({
             'move': move,
-            'trainingopponent': trainingopponent 
+            'playerID': 1 
             }))
 
           if bot == "bjorn-cyborg":
             move = Junior.junior_bot(image)
             self.send(text_data=json.dumps({
             'move': move,
-            'trainingopponent': trainingopponent 
+            'playerID': 1 
           }))
 
 
