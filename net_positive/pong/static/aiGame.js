@@ -59,7 +59,6 @@ class BotSocket extends WebSocket {
   }
 }
 
-
 class Pong {
   constructor(canvas) {
     this.ballHeight = 8;
@@ -86,7 +85,6 @@ class Pong {
     this.BotSocket = new BotSocket
   }
 
-
   handleWebSocketResponse() {
     var that = this
     this.BotSocket.onmessage = function(e) {
@@ -107,10 +105,10 @@ class Pong {
     const callback = (milliseconds) => {
       if (lastTime) {
         if (this.players[1].repeatActionCount < 3) {
-          this.botMove(this.players[1]._moveUpBot, this.players[1]);
+          this.botMove(this.players[1]);
         }
         if (this.players[0].repeatActionCount < 3 && this.training === true) {
-          this.botMove(this.players[0]._moveUpBot, this.players[0]);
+          this.botMove(this.players[0]);
         }
         this.update((milliseconds - lastTime) / 1000);
         this.updateReward();
@@ -231,7 +229,6 @@ class Pong {
 
   collide(player, ball) {
     if (player.left <= ball.right && player.right >= ball.left && player.top <= ball.bottom && player.bottom >= ball.top) {
-      const length = ball.velocity.length
 
       if (ball.position.x > this._canvas.width/2) {
         ball.position.x = this._canvas.width - this.paddleOffsetStart - this.paddleWidth/2;
@@ -241,8 +238,8 @@ class Pong {
       }
 
       ball.velocity.x = -ball.velocity.x;
-      ball.velocity.y += ball.velocity.y * (Math.random() - .5);
-      ball.velocity.length = length * 1.05; 
+      ball.velocity.y += ball.velocity.y * (Math.random() - 0.5);
+      ball.velocity.length *= 1.05; 
     }
   }
 
@@ -343,9 +340,9 @@ class Pong {
     }
   }
 
-  botMove(move, player) {
+  botMove(player) {
     this.repeatActionCountBot += 1;
-    if (move === true) {
+    if (player._moveUpBot === true) {
       if (player.position.y - this.botSpeed >= 0) {
         player.position.y -= this.botSpeed;
       }
