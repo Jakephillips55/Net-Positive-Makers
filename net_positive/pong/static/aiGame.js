@@ -74,6 +74,7 @@ class Pong {
     this.gameFinished = false;
     this.training = false;
     this.bot = 'rl-federer';
+    this.trainingOpponent = 'nodevak-djokovic';
     this.isPointOver = false;
     this.aggregateReward = 0;
     this.players = [new Player(this.paddleWidth, this.paddleHeight),
@@ -159,10 +160,10 @@ class Pong {
   getTrainingOpponentMove() {
     this.players[0].responseReceived = false;
     this.BotSocket.send(JSON.stringify({
-      "court": this.retrieveGameData(this.players[1]),
+      "court": this.retrieveGameData(this.players[0]),
       "image": "dummy",
       "done": "dummy",
-      "bot": "nodevak-djokovic",
+      "bot": this.trainingOpponent,
       "trainingopponent": "true"
       }));
   }
