@@ -42,7 +42,7 @@ class Ball extends Rectangle {
 }
 
 class Player extends Rectangle {
-  constructor(w,h) {
+  constructor(w, h) {
     super(w, h);
     this.score = 0;
     this.game = 0;
@@ -203,15 +203,9 @@ class Pong {
   }
 
   rgbaToBinary(imageArray) {
-    imageArray = imageArray.filter(function(_, i) {
-      return (i + 1) % 4;
-    })
-    imageArray = imageArray.filter(function(_, i) {
-      return (i + 1) % 3;
-    })
-    imageArray = imageArray.filter(function(_, i) {
-      return (i + 1) % 2;
-    })
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 4})
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 3})
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 2})
 
     for (var i = 0, len = imageArray.length; i < len; i++) {
       imageArray[i] < 127 ? imageArray[i] = 0 : imageArray[i] = 1;
@@ -266,16 +260,16 @@ class Pong {
   }
 
   start() {
-      this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
-      this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
-      this.ball.velocity.length = this.serveSpeed;
+    this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
+    this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
+    this.ball.velocity.length = this.serveSpeed;
   }
 
   restartGame() {
-      this.players[1].score === 21 ? this.players[1].game += 1 : this.players[0].game += 1;
-      this.players[0].score = 0;
-      this.players[1].score = 0;
-      this.start();
+    this.players[1].score === 21 ? this.players[1].game += 1 : this.players[0].game += 1;
+    this.players[0].score = 0;
+    this.players[1].score = 0;
+    this.start();
   }
 
   updateReward() {
