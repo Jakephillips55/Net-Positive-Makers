@@ -355,8 +355,14 @@ class Pong {
       }
     })
 
-    if (this.ball.top < 0 || this.ball.bottom > this._canvas.height) {
+    if (this.ball.top < 0) {
       this.ball.velocity.y = -this.ball.velocity.y;
+      this.ball.position.y = 4
+    }
+
+    if (this.ball.bottom > this._canvas.height) {
+      this.ball.velocity.y = -this.ball.velocity.y;
+      this.ball.position.y = this._canvas.height - 4
     }
 
     this.players.forEach(player => this.collide(player, this.ball));
