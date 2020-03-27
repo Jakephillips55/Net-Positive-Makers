@@ -84,19 +84,26 @@ class Pong {
     this.players[0].position.x = this.paddleOffsetStart;
     this.players[1].position.x = this._canvas.width - this.paddleOffsetStart;
     this.BotSocket = new BotSocket
+  }
 
+
+  handleWebSocketResponse() {
     var that = this
-    
+      
     this.BotSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
       var playerID = parseInt(data.playerID)
       that.storeMove(data['move'], that.players[playerID])
     }
+  }
 
+  handleWebSocketClose() {
     this.BotSocket.onclose = function(e) {
       console.error('Chat socket closed unexpectedly');
     }
+  }
 
+  run() {
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
@@ -137,6 +144,8 @@ class Pong {
     this.reset();
     callback();
   }
+
+  
 
   storeMove(move, player) {
     player._moveUpBot = move;
@@ -374,6 +383,9 @@ class Game {
 
   constructor(pong) {
     this.pong = pong;
+    pong.handleWebSocketResponse();
+    pong.handleWebSocketClose();
+    pong.run();
   }
 
   keyboard() {
@@ -388,6 +400,7 @@ class Game {
       }
     }
   }
+
 }
 
 const canvas = document.getElementById('pong');
