@@ -35,15 +35,15 @@ class Rectangle {
 }
 
 class Ball extends Rectangle {
-  constructor() {
-    super(4, 8);
+  constructor(w, h) {
+    super(w, h);
     this.velocity = new Vector;
   }
 }
 
 class Player extends Rectangle {
-  constructor() {
-    super(8, 32);
+  constructor(w,h) {
+    super(w, h);
     this.score = 0;
     this.game = 0;
     this.velocity = new Vector;
@@ -59,13 +59,19 @@ class BotSocket extends WebSocket {
 
 class Pong {
   constructor(canvas) {
+    this.ballHeight = 8;
+    this.ballWidth = 4;
+    this.paddleHeight = 32;
+    this.paddleWidth = 8;
+    this.botSpeed = 12;
+    this.paddleOffsetStart = 36;
     this._moveUpBot = '';
     this._movUpTrainingOpponent = '';
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
     this.repeatActionCountBot = 0;
     this.repeatActionCountTrainingOpponent = 0;
-    this.ball = new Ball;
+    this.ball = new Ball(this.ballWidth, this.ballHeight);
     this.gameFinished = false;
     this.training = false;
     this.bot = 'rl-federer';
@@ -73,9 +79,10 @@ class Pong {
     this.aggregateReward = 0;
     this.responseReceivedBot = true;
     this.responseReceivedTrainingOpponent = true;
-    this.players = [new Player, new Player];
-    this.players[0].position.x = 36;
-    this.players[1].position.x = this._canvas.width - 36;
+    this.players = [new Player(this.paddleWidth, this.paddleHeight),
+                    new Player(this.paddleWidth, this.paddleHeight)];
+    this.players[0].position.x = this.paddleOffsetStart;
+    this.players[1].position.x = this._canvas.width - this.paddleOffsetStart;
     this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
     this.BotSocket = new BotSocket
 
@@ -98,14 +105,14 @@ class Pong {
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
-        this.update((milliseconds - lastTime) / 1000);
-        this.updateReward();
         if (this.repeatActionCountBot < 3) {
           this.botUpdate(this._moveUpBot);
         }
         if (this.repeatActionCountTrainingOpponent < 3) {
           this.trainingOpponentMove(this._moveUpTrainingOpponent);
         }
+        this.update((milliseconds - lastTime) / 1000);
+        this.updateReward();
       }
       lastTime = milliseconds;
       
@@ -241,11 +248,11 @@ class Pong {
     if (player.left <= ball.right && player.right >= ball.left && player.top <= ball.bottom && player.bottom >= ball.top) {
       const length = ball.velocity.length
 
-      if (ball.position.x > 160) {
-        ball.position.x -=  9
+      if (ball.position.x > this._canvas.width/2) {
+        ball.position.x = 280
       }
       else {
-        ball.position.x +=  9
+        ball.position.x = 40
       }
 
       ball.velocity.x = -ball.velocity.x;
@@ -294,11 +301,9 @@ class Pong {
   }
 
   start() {
-    if (this.ball.velocity.x === 0 && this.ball.velocity.y === 0) {
-      this.ball.velocity.x = 300 * (Math.random() > .5 ? 1 : -1);
-      this.ball.velocity.y = 300 * (Math.random() > .5 ? 1 : -1);
+      this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
+      this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
       this.ball.velocity.length = 200;
-    }
   }
 
   restartGame() {
@@ -335,64 +340,62 @@ class Pong {
       if (this.ball.velocity.x < 0) {
         playerId = 1;
         this.isPointOver = true;
+        this.players[playerId].score++;
+        this.updateScore()
       } 
-      else {
+      else if (this.ball.velocity.x > 0) {
         playerId = 0;
         this.isPointOver = true;
+        this.players[playerId].score++;
+        this.updateScore()
       }
-      this.players[playerId].score++;
+      else {
+        this.isPointOver = true;
+      }
     }
-
-    $(document).ready(function() {
   
-      updateScore()
+    this.collideSides()
+    this.players.forEach(player => this.collide(player, this.ball));
+  }
 
-      function updateScore() {
-        $("#player1tally").text(pong.players[0].score)
-        $("#player2tally").text(pong.players[1].score)
-        $("#player1-game-tally").text(pong.players[0].game)
-        $("#player2-game-tally").text(pong.players[1].game)
-      }
-    })
+  updateScore() {
+    $("#player1tally").text(pong.players[0].score)
+    $("#player2tally").text(pong.players[1].score)
+    $("#player1-game-tally").text(pong.players[0].game)
+    $("#player2-game-tally").text(pong.players[1].game)
+  }
 
+  collideSides() {
     if (this.ball.top < 0) {
       this.ball.velocity.y = -this.ball.velocity.y;
-      this.ball.position.y = 4
+      this.ball.position.y = this.ballHeight/2
     }
 
     if (this.ball.bottom > this._canvas.height) {
       this.ball.velocity.y = -this.ball.velocity.y;
-      this.ball.position.y = this._canvas.height - 4
+      this.ball.position.y = this._canvas.height - this.ballHeight/2
     }
-
-    this.players.forEach(player => this.collide(player, this.ball));
   }
 
   botJS() {
     if (this.ball.position.y <= this.players[1].position.y) {
-      this.players[1].position.y -= 20
+      this.players[1].position.y -= this.botSpeed;
     } 
     else  {
-      this.players[1].position.y += 20
+      this.players[1].position.y += this.botSpeed;
     }
   }
 
-  botUpdate(moveUp) {
+  botUpdate(move) {
     this.repeatActionCountBot += 1;
-    if(moveUp === true) {
-      if (this.players[1].position.y - 12 >= 0) {
-        this.players[1].position.y -= 12
-      }
-      else {
-        this.players[1].position.y = this.players[1].position.y
+    if (move === true) {
+      if (this.players[1].position.y - this.botSpeed >= 0) {
+        this.players[1].position.y -= this.botSpeed;
       }
     } 
     else {
-      if (this.players[1].position.y + 12 <= 320) {
-        this.players[1].position.y += 12
-      }
-      else {
-        this.players[1].position.y = this.players[1].position.y
+      if (this.players[1].position.y + this.botSpeed <= this._canvas.height) {
+        this.players[1].position.y += this.botSpeed;
       }
     }
   }
@@ -400,10 +403,10 @@ class Pong {
   trainingOpponentMove(move) {
     this.repeatActionCountTrainingOpponent += 1;
     if (move === false){
-      this.players[0].position.y += 10
+      this.players[0].position.y += this.botSpeed;
     }
     else {
-      this.players[0].position.y -= 10
+      this.players[0].position.y -= this.botSpeed;
     }
   }
 }
@@ -417,11 +420,12 @@ class Game {
   keyboard() {
     window.addEventListener('keydown', keyboardHandlerFunction); 
     function keyboardHandlerFunction(e) {
-      if (e.keyCode === 40 && pong.players[0].position.y < (pong._canvas.height - 50) ) {
-        pong.players[0].position.y += 30
+      var humanSpeed = 30;
+      if (e.keyCode === 40 && pong.players[0].position.y < (pong._canvas.height - humanSpeed) ) {
+        pong.players[0].position.y += humanSpeed;
       } 
-      else if (e.keyCode === 38 && pong.players[0].position.y > 50) {
-        pong.players[0].position.y -= 30
+      else if (e.keyCode === 38 && pong.players[0].position.y > humanSpeed) {
+        pong.players[0].position.y -= humanSpeed;
       }
     }
   }
