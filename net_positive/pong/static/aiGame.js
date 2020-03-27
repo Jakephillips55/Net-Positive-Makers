@@ -133,7 +133,8 @@ class Pong {
         }
       }   
     }
-    
+
+    this.reset();
     callback();
   }
 
@@ -295,14 +296,12 @@ class Pong {
   }
 
   restartGame() {
-      var playerId
       if (this.players[1].score === 21) {
-        playerId = 1;
+        this.players[1].game += 1
       }
       else {
-        playerId = 0;
+        this.players[1].game += 1
       }
-      this.players[playerId].game += 1
       this.players[0].score = 0;
       this.players[1].score = 0;
       this.start();
@@ -324,24 +323,15 @@ class Pong {
     this.ball.position.y += this.ball.velocity.y * deltatime;
 
     if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
-      var playerId;
       if (this.ball.velocity.x < 0) {
-        playerId = 1;
-        this.isPointOver = true;
-        this.players[playerId].score++;
-        this.updateScore()
+        this.players[1].score++;
       } 
-      else if (this.ball.velocity.x > 0) {
-        playerId = 0;
-        this.isPointOver = true;
-        this.players[playerId].score++;
-        this.updateScore()
-      }
       else {
-        this.isPointOver = true;
+        this.players[0].score++;
       }
+      this.isPointOver = true;
     }
-  
+    this.updateScore()
     this.collideSides()
     this.players.forEach(player => this.collide(player, this.ball));
   }
