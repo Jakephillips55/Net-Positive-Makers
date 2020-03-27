@@ -47,6 +47,9 @@ class Player extends Rectangle {
     this.score = 0;
     this.game = 0;
     this.velocity = new Vector;
+    this.repeatActionCount = 0;
+    this._moveUpBot = '';
+    this.responseReceived = true;
   }
 }
 
@@ -65,37 +68,29 @@ class Pong {
     this.paddleWidth = 8;
     this.botSpeed = 12;
     this.paddleOffsetStart = 36;
-    this._moveUpBot = '';
-    this._movUpTrainingOpponent = '';
+    this.serveSpeed = 200;
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
-    this.repeatActionCountBot = 0;
-    this.repeatActionCountTrainingOpponent = 0;
     this.ball = new Ball(this.ballWidth, this.ballHeight);
     this.gameFinished = false;
     this.training = false;
     this.bot = 'rl-federer';
+    this.trainingOpponent = 'nodevak-djokovic';
     this.isPointOver = false;
     this.aggregateReward = 0;
-    this.responseReceivedBot = true;
-    this.responseReceivedTrainingOpponent = true;
     this.players = [new Player(this.paddleWidth, this.paddleHeight),
                     new Player(this.paddleWidth, this.paddleHeight)];
+    this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
     this.players[0].position.x = this.paddleOffsetStart;
     this.players[1].position.x = this._canvas.width - this.paddleOffsetStart;
-    this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
     this.BotSocket = new BotSocket
 
     var that = this
     
     this.BotSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
-      if (data['trainingopponent'] === "false") {
-        that.storeMove(data['move'])
-      }
-      else { 
-        that.storeTrainingOpponentMove(data['move'])
-      }
+      var playerID = parseInt(data.playerID)
+      that.storeMove(data['move'], that.players[playerID])
     }
 
     this.BotSocket.onclose = function(e) {
@@ -105,17 +100,17 @@ class Pong {
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
-        if (this.repeatActionCountBot < 3) {
-          this.botUpdate(this._moveUpBot);
+        if (this.players[1].repeatActionCount < 3) {
+          this.botMove(this.players[1]._moveUpBot, this.players[1]);
         }
-        if (this.repeatActionCountTrainingOpponent < 3) {
-          this.trainingOpponentMove(this._moveUpTrainingOpponent);
+        if (this.players[0].repeatActionCount < 3 && this.training === true) {
+          this.botMove(this.players[0]._moveUpBot, this.players[0]);
         }
         this.update((milliseconds - lastTime) / 1000);
         this.updateReward();
       }
       lastTime = milliseconds;
-      
+
       requestAnimationFrame(callback);
 
       if (this.isPointOver === true) {
@@ -125,7 +120,7 @@ class Pong {
       this.draw();
   
       if (this.BotSocket.readyState === 1) {
-        if (this.responseReceivedBot === true) {
+        if (this.players[1].responseReceived === true) {
           // this.draw();
           // uncomment the above line to see what the bot is seeing
           this.getMove();
@@ -133,32 +128,26 @@ class Pong {
           this.aggregateReward = 0;
         }
 
-        if ((this.training === true ) && (this.responseReceivedTrainingOpponent === true)) {
-          this.responseReceivedTrainingOpponent = false;
+        if ((this.training === true ) && (this.players[0].responseReceived === true)) {
           this.getTrainingOpponentMove();
         }
       }   
     }
-    
+
+    this.reset();
     callback();
   }
 
-  storeMove(move) {
-    this._moveUpBot = move;
-    this.responseReceivedBot = true;
-    this.repeatActionCountBot = 0;
-  }
-
-  storeTrainingOpponentMove(move){
-    this._moveUpTrainingOpponent = move;
-    this.responseReceivedTrainingOpponent = true;
-    this.repeatActionCountTrainingOpponent = 0;
+  storeMove(move, player) {
+    player._moveUpBot = move;
+    player.responseReceived = true;
+    player.repeatActionCount = 0;
   }
 
   getMove() {
-    this.responseReceivedBot = false;
+    this.players[1].responseReceived = false;
     this.BotSocket.send(JSON.stringify({
-      "court": this.retrieveGameData(1),
+      "court": this.retrieveGameData(this.players[1]),
       "image": this.retrievePixelData(),
       "done": this.gameFinished,
       "bot": this.bot,
@@ -167,21 +156,21 @@ class Pong {
   }
 
   getTrainingOpponentMove() {
+    this.players[0].responseReceived = false;
     this.BotSocket.send(JSON.stringify({
-      "court": this.retrieveGameData(0),
+      "court": this.retrieveGameData(this.players[0]),
       "image": "dummy",
       "done": "dummy",
-      "bot": "nodevak-djokovic",
+      "bot": this.trainingOpponent,
       "trainingopponent": "true"
       }));
   }
 
   retrieveGameData(player) {
     var bally = Math.round(this.ball.position.y);
-    var paddley = this.players[player].position.y;
+    var paddley = player.position.y;
     var reward = this.aggregateReward;
     var court = `{"bally": ${bally}, "paddley": ${paddley}, "reward": ${reward}}`;
-    console.log(reward);
     return court;
   }
 
@@ -249,10 +238,10 @@ class Pong {
       const length = ball.velocity.length
 
       if (ball.position.x > this._canvas.width/2) {
-        ball.position.x = 280
+        ball.position.x = this._canvas.width - this.paddleOffsetStart - this.paddleWidth/2;
       }
       else {
-        ball.position.x = 40
+        ball.position.x = this.paddleOffsetStart + this.paddleWidth/2;
       }
 
       ball.velocity.x = -ball.velocity.x;
@@ -303,18 +292,16 @@ class Pong {
   start() {
       this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
       this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
-      this.ball.velocity.length = 200;
+      this.ball.velocity.length = this.serveSpeed;
   }
 
   restartGame() {
-      var playerId
       if (this.players[1].score === 21) {
-        playerId = 1;
+        this.players[1].game += 1
       }
       else {
-        playerId = 0;
+        this.players[1].game += 1
       }
-      this.players[playerId].game += 1
       this.players[0].score = 0;
       this.players[1].score = 0;
       this.start();
@@ -336,24 +323,15 @@ class Pong {
     this.ball.position.y += this.ball.velocity.y * deltatime;
 
     if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
-      var playerId;
       if (this.ball.velocity.x < 0) {
-        playerId = 1;
-        this.isPointOver = true;
-        this.players[playerId].score++;
-        this.updateScore()
+        this.players[1].score++;
       } 
-      else if (this.ball.velocity.x > 0) {
-        playerId = 0;
-        this.isPointOver = true;
-        this.players[playerId].score++;
-        this.updateScore()
-      }
       else {
-        this.isPointOver = true;
+        this.players[0].score++;
       }
+      this.isPointOver = true;
     }
-  
+    this.updateScore()
     this.collideSides()
     this.players.forEach(player => this.collide(player, this.ball));
   }
@@ -377,36 +355,17 @@ class Pong {
     }
   }
 
-  botJS() {
-    if (this.ball.position.y <= this.players[1].position.y) {
-      this.players[1].position.y -= this.botSpeed;
-    } 
-    else  {
-      this.players[1].position.y += this.botSpeed;
-    }
-  }
-
-  botUpdate(move) {
+  botMove(move, player) {
     this.repeatActionCountBot += 1;
     if (move === true) {
-      if (this.players[1].position.y - this.botSpeed >= 0) {
-        this.players[1].position.y -= this.botSpeed;
+      if (player.position.y - this.botSpeed >= 0) {
+        player.position.y -= this.botSpeed;
       }
     } 
     else {
-      if (this.players[1].position.y + this.botSpeed <= this._canvas.height) {
-        this.players[1].position.y += this.botSpeed;
+      if (player.position.y + this.botSpeed <= this._canvas.height) {
+        player.position.y += this.botSpeed;
       }
-    }
-  }
-
-  trainingOpponentMove(move) {
-    this.repeatActionCountTrainingOpponent += 1;
-    if (move === false){
-      this.players[0].position.y += this.botSpeed;
-    }
-    else {
-      this.players[0].position.y -= this.botSpeed;
     }
   }
 }
