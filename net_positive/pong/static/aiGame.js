@@ -68,6 +68,7 @@ class Pong {
     this.paddleWidth = 8;
     this.botSpeed = 12;
     this.paddleOffsetStart = 36;
+    this.serveSpeed = 200;
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
     this.ball = new Ball(this.ballWidth, this.ballHeight);
@@ -109,7 +110,7 @@ class Pong {
         this.updateReward();
       }
       lastTime = milliseconds;
-      
+
       requestAnimationFrame(callback);
 
       if (this.isPointOver === true) {
@@ -236,10 +237,10 @@ class Pong {
       const length = ball.velocity.length
 
       if (ball.position.x > this._canvas.width/2) {
-        ball.position.x = 280
+        ball.position.x = this._canvas.width - this.paddleOffsetStart - this.paddleWidth/2;
       }
       else {
-        ball.position.x = 40
+        ball.position.x = this.paddleOffsetStart + this.paddleWidth/2;
       }
 
       ball.velocity.x = -ball.velocity.x;
@@ -290,7 +291,7 @@ class Pong {
   start() {
       this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
       this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
-      this.ball.velocity.length = 200;
+      this.ball.velocity.length = this.serveSpeed;
   }
 
   restartGame() {
