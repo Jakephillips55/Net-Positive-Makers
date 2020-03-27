@@ -89,7 +89,6 @@ class Pong {
 
   handleWebSocketResponse() {
     var that = this
-      
     this.BotSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
       var playerID = parseInt(data.playerID)
@@ -131,12 +130,14 @@ class Pong {
           // this.draw();
           // uncomment the above line to see what the bot is seeing
           this.getMove();
+          this.players[1].responseReceived = false;
           this.gameFinished = false;
           this.aggregateReward = 0;
         }
 
         if ((this.training === true ) && (this.players[0].responseReceived === true)) {
           this.getTrainingOpponentMove();
+          this.players[0].responseReceived = false;
         }
       }   
     }
@@ -145,8 +146,6 @@ class Pong {
     callback();
   }
 
-  
-
   storeMove(move, player) {
     player._moveUpBot = move;
     player.responseReceived = true;
@@ -154,7 +153,6 @@ class Pong {
   }
 
   getMove() {
-    this.players[1].responseReceived = false;
     this.BotSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[1]),
       "image": this.retrievePixelData(),
@@ -165,7 +163,6 @@ class Pong {
   }
 
   getTrainingOpponentMove() {
-    this.players[0].responseReceived = false;
     this.BotSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[0]),
       "image": "dummy",
@@ -220,20 +217,10 @@ class Pong {
     imageArray = imageArray.filter(function(_, i) {
       return (i + 1) % 2;
     })
-    
-    var everyOtherTime = 0
 
     for (var i = 0, len = imageArray.length; i < len; i++) {
       if (imageArray[i] < 127.5) {
         imageArray[i] = 0;
-      }
-      else if (imageArray[i] == 127.5)
-      {
-        if (everyOtherTime % 2 == 0) {
-
-          imageArray[i] = 1;
-          everyotherTime += 1;
-        }
       }
       else {
         imageArray[i] = 1;
@@ -255,14 +242,6 @@ class Pong {
 
       ball.velocity.x = -ball.velocity.x;
       ball.velocity.y += ball.velocity.y * (Math.random() - .5);
-
-      // ball and paddle collision like the actual Atari Pong
-      // var relativeIntersectY = player.position.y - ball.position.y;
-      // var normalizedRelativeIntersectionY = relativeIntersectY/(32/2);
-      // var bounceAngle = normalizedRelativeIntersectionY * 5 * Math.PI / 12;
-      // ball.velocity.x = ball.velocity.length * Math.cos(bounceAngle);
-      // ball.velocity.y = ball.velocity.length * - Math.sin(bounceAngle);
-
       ball.velocity.length = length * 1.05; 
     }
   }
@@ -400,7 +379,6 @@ class Game {
       }
     }
   }
-
 }
 
 const canvas = document.getElementById('pong');
