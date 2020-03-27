@@ -214,12 +214,7 @@ class Pong {
     })
 
     for (var i = 0, len = imageArray.length; i < len; i++) {
-      if (imageArray[i] < 127.5) {
-        imageArray[i] = 0;
-      }
-      else {
-        imageArray[i] = 1;
-      }
+      imageArray[i] < 127 ? imageArray[i] = 0 : imageArray[i] = 1;
     }
     return imageArray;
   }
@@ -233,7 +228,6 @@ class Pong {
       else {
         ball.position.x = this.paddleOffsetStart + this.paddleWidth/2;
       }
-
       ball.velocity.x = -ball.velocity.x;
       ball.velocity.y += ball.velocity.y * (Math.random() - 0.5);
       ball.velocity.length *= 1.05; 
@@ -278,25 +272,15 @@ class Pong {
   }
 
   restartGame() {
-      if (this.players[1].score === 21) {
-        this.players[1].game += 1
-      }
-      else {
-        this.players[1].game += 1
-      }
+      this.players[1].score === 21 ? this.players[1].game += 1 : this.players[0].game += 1;
       this.players[0].score = 0;
       this.players[1].score = 0;
       this.start();
   }
 
   updateReward() {
-    if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
-      if (this.ball.velocity.x < 0) {
-        this.aggregateReward += 1;
-      } 
-      else {
-        this.aggregateReward += -1;
-      }
+    if (this.isPointOver === true) {
+      this.ball.velocity.x < 0 ? this.aggregateReward += 1: this.aggregateReward += -1;
     }
   }
 
@@ -305,14 +289,10 @@ class Pong {
     this.ball.position.y += this.ball.velocity.y * deltatime;
 
     if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
-      if (this.ball.velocity.x < 0) {
-        this.players[1].score++;
-      } 
-      else {
-        this.players[0].score++;
-      }
+      this.ball.velocity.x < 0 ? this.players[1].score++ : this.players[0].score++;
       this.isPointOver = true;
     }
+
     this.updateScore()
     this.collideSides()
     this.players.forEach(player => this.collide(player, this.ball));
@@ -368,7 +348,7 @@ class Game {
       if (e.keyCode === 40 && pong.players[0].position.y < (pong._canvas.height - humanSpeed) ) {
         pong.players[0].position.y += humanSpeed;
       } 
-      else if (e.keyCode === 38 && pong.players[0].position.y > humanSpeed) {
+      if (e.keyCode === 38 && pong.players[0].position.y > humanSpeed) {
         pong.players[0].position.y -= humanSpeed;
       }
     }
