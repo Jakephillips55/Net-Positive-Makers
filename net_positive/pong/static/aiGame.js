@@ -125,17 +125,10 @@ class Pong {
   
       if (this.BotSocket.readyState === 1) {
         if (this.players[1].responseReceived === true) {
-          // this.draw();
-          // uncomment the above line to see what the bot is seeing
           this.getMove();
-          this.players[1].responseReceived = false;
-          this.gameFinished = false;
-          this.aggregateReward = 0;
         }
-
         if ((this.training === true ) && (this.players[0].responseReceived === true)) {
           this.getTrainingOpponentMove();
-          this.players[0].responseReceived = false;
         }
       }   
     }
@@ -151,6 +144,7 @@ class Pong {
   }
 
   getMove() {
+    this.players[1].responseReceived = false;
     this.BotSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[1]),
       "image": this.retrievePixelData(),
@@ -158,9 +152,12 @@ class Pong {
       "bot": this.bot,
       "trainingopponent": "false"
       }));
+    this.gameFinished = false;
+    this.aggregateReward = 0;
   }
 
   getTrainingOpponentMove() {
+    this.players[0].responseReceived = false;
     this.BotSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[0]),
       "image": "dummy",
