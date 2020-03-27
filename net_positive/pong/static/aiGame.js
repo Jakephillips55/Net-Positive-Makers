@@ -50,6 +50,13 @@ class Player extends Rectangle {
   }
 }
 
+class BotSocket extends WebSocket {
+  constructor() {
+    super('ws://' + window.location.host + '/ws/pong/training/')
+  }
+}
+
+
 class Pong {
   constructor(canvas) {
     this._moveUpBot = '';
@@ -59,8 +66,7 @@ class Pong {
     this.repeatActionCountBot = 0;
     this.repeatActionCountTrainingOpponent = 0;
     this.ball = new Ball;
-    this.gameCount = 0;
-    this.done = false;
+    this.gameFinished = false;
     this.training = false;
     this.bot = 'rl-federer';
     this.isPointOver = false;
@@ -71,25 +77,17 @@ class Pong {
     this.players[0].position.x = 36;
     this.players[1].position.x = this._canvas.width - 36;
     this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
-    this.BotSocket = new WebSocket(
-      'ws://' + window.location.host + '/ws/pong/training/');
+    this.BotSocket = new BotSocket
 
     var that = this
     
     this.BotSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
-      that.repeatActionCountBot = 0;
-      var move = data['move'];
-      var trainingOpponent = data['trainingopponent']
-      if (trainingOpponent === "false") {
-        that._moveUpBot = move;
-        that.responseReceivedBot = true;
-        that.repeatActionCountBot = 0;
+      if (data['trainingopponent'] === "false") {
+        that.storeMove(data['move'])
       }
       else { 
-        that._moveUpTrainingOpponent = move;
-        that.responseReceivedTrainingOpponent = true;
-        that.repeatActionCountTrainingOpponent = 0;
+        that.storeTrainingOpponentMove(data['move'])
       }
     }
 
@@ -115,8 +113,6 @@ class Pong {
 
       if (this.isPointOver === true) {
         this.reset();
-        this.gameCount += 1;
-        this.isPointOver = false;
       }
 
       this.draw();
@@ -126,7 +122,7 @@ class Pong {
           // this.draw();
           // uncomment the above line to see what the bot is seeing
           this.getMove();
-          this.done = false;
+          this.gameFinished = false;
           this.aggregateReward = 0;
         }
 
@@ -140,12 +136,24 @@ class Pong {
     callback();
   }
 
+  storeMove(move) {
+    this._moveUpBot = move;
+    this.responseReceivedBot = true;
+    this.repeatActionCountBot = 0;
+  }
+
+  storeTrainingOpponentMove(move){
+    this._moveUpTrainingOpponent = move;
+    this.responseReceivedTrainingOpponent = true;
+    this.repeatActionCountTrainingOpponent = 0;
+  }
+
   getMove() {
     this.responseReceivedBot = false;
     this.BotSocket.send(JSON.stringify({
       "court": this.retrieveGameData(1),
       "image": this.retrievePixelData(),
-      "done": this.done,
+      "done": this.gameFinished,
       "bot": this.bot,
       "trainingopponent": "false"
       }));
@@ -273,13 +281,14 @@ class Pong {
     this.ball.velocity.y = 0;
     this.players[0].position.y = this._canvas.height / 2;
     this.players[1].position.y = this._canvas.height / 2;
+    this.isPointOver = false;
 
     if (this.players[0].score < 21 && this.players[1].score < 21) {
       this.start();
     } 
     
     else {
-      this.done = true;
+      this.gameFinished = true;
       this.restartGame(); 
     }
   }
