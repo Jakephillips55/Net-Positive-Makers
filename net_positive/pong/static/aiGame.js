@@ -107,7 +107,7 @@ class Pong {
         if (this.players[1].repeatActionCount < 3) {
           this.botMove(this.players[1]);
         }
-        if (this.players[0].repeatActionCount < 3 && this.training === true) {
+        if (this.players[0].repeatActionCount < 3 && this.training) {
           this.botMove(this.players[0]);
         }
         this.update((milliseconds - lastTime) / 1000);
@@ -117,17 +117,17 @@ class Pong {
 
       requestAnimationFrame(callback);
 
-      if (this.isPointOver === true) {
+      if (this.isPointOver) {
         this.reset();
       }
 
       this.draw();
   
       if (this.BotSocket.readyState === 1) {
-        if (this.players[1].responseReceived === true) {
+        if (this.players[1].responseReceived) {
           this.getMove();
         }
-        if ((this.training === true ) && (this.players[0].responseReceived === true)) {
+        if ((this.training) && (this.players[0].responseReceived)) {
           this.getTrainingOpponentMove();
         }
       }   
@@ -279,7 +279,7 @@ class Pong {
   }
 
   updateReward() {
-    if (this.isPointOver === true) {
+    if (this.isPointOver) {
       this.ball.velocity.x < 0 ? this.aggregateReward += 1: this.aggregateReward += -1;
     }
   }
@@ -319,7 +319,7 @@ class Pong {
 
   botMove(player) {
     this.repeatActionCountBot += 1;
-    if (player._moveUpBot === true) {
+    if (player._moveUpBot) {
       if (player.position.y - this.botSpeed >= 0) {
         player.position.y -= this.botSpeed;
       }
