@@ -67,7 +67,6 @@ class Ball extends Rectangle {
       this.velocity.y = -this.velocity.y;
       this.position.y = this.size.y/2
     }
-
     if (this.bottom > canvasHeight) {
       this.velocity.y = -this.velocity.y;
       this.position.y = canvasHeight - this.size.y/2
@@ -114,28 +113,28 @@ class Player extends Rectangle {
   botMove(canvasHeight) {
     this.repeatActionCount++;
     if (this._moveUpBot) {
-      if (this.isMoveInCourtTop()) {this.position.y -= this.botSpeed;}
+      if (this.isMoveInCourtTop(this.botSpeed)) {this.position.y -= this.botSpeed;}
     } 
     else {
-      if (this.isMoveInCourtBottom(canvasHeight)) {this.position.y += this.botSpeed;}
+      if (this.isMoveInCourtBottom(this.botSpeed, canvasHeight)) {this.position.y += this.botSpeed;}
     }
   }
 
   humanMove(canvasHeight, moveUpHuman) {
     if (moveUpHuman) {
-      if (this.isMoveInCourtTop()) {this.position.y -= this.humanSpeed;}
+      if (this.isMoveInCourtTop(this.humanSpeed)) {this.position.y -= this.humanSpeed;}
     }
     else {
-      if (this.isMoveInCourtBottom(canvasHeight)) {this.position.y += this.humanSpeed;}
+      if (this.isMoveInCourtBottom(this.humanSpeed, canvasHeight)) {this.position.y += this.humanSpeed;}
     }
   }
 
-  isMoveInCourtTop() {
-    return this.position.y >= this.humanSpeed;
+  isMoveInCourtTop(moveSpeed) {
+    return this.position.y >= moveSpeed;
   }
 
-  isMoveInCourtBottom(canvasHeight) {
-    return this.position.y + this.humanSpeed <= canvasHeight;
+  isMoveInCourtBottom(moveSpeed, canvasHeight) {
+    return this.position.y + moveSpeed <= canvasHeight;
   }
 
   resetPosition(canvasHeight) {
@@ -347,8 +346,8 @@ class Pong {
       this.isPointOver = true;
     }
 
-    this.updateScore()
-    this.ball.collideSides(this._canvas.height)
+    this.updateScore();
+    this.ball.collideSides(this._canvas.height);
     this.players.forEach(player => this.ball.collidePaddle(player, this._canvas.width));
   }
 
@@ -361,7 +360,6 @@ class Pong {
 }
 
 class Game {
-
   constructor(pong, botSocket) {
     this.pong = pong;
     this.botSocket = botSocket;
