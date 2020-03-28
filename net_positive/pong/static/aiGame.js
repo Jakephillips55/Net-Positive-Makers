@@ -388,9 +388,3 @@ class Game {
   }
 }
 
-const canvas = document.getElementById('pong');
-const pong = new Pong(canvas);
-const botSocket = new BotSocket(pong, 'ws://' + window.location.host + '/ws/pong/training/');
-const game = new Game(pong, botSocket);
-game.run();
-

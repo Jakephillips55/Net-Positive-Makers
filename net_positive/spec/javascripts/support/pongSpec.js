@@ -1,9 +1,9 @@
 "use strict";
 
 describe('Pong', function() {
+  var testCanvas;  
   var pong;
-  var testCanvas;      
-
+      
   beforeEach(function() {
     testCanvas = document.createElement('canvas')
     testCanvas.width = 320

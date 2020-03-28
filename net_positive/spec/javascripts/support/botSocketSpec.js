@@ -1,12 +1,15 @@
 "use strict";
 
 describe('botSocket', function() {
-  var botSocket;
-  var pong;
   var testCanvas; 
-
+  var pong;
+  var botSocket;
+  
   beforeEach(function() {
     testCanvas = document.createElement('canvas')
+    testCanvas.width = 320
+    testCanvas.height = 320
+    testCanvas.id = 'pong'
     pong = new Pong(testCanvas);
     botSocket = new BotSocket(pong, 'ws://testurl:8000');
     spyOn(pong.players[0], "storeMove");
