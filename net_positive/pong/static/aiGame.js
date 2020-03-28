@@ -97,6 +97,7 @@ class Player extends Rectangle {
     this.score = 0;
     this.game = 0;
     this.botSpeed = 12;
+    this.humanSpeed = 30;
     this.velocity = new Vector;
     this.repeatActionCount = 0;
     this._moveUpBot = '';
@@ -113,15 +114,28 @@ class Player extends Rectangle {
   botMove(canvasHeight) {
     this.repeatActionCount++;
     if (this._moveUpBot) {
-      if (this.position.y - this.botSpeed >= 0) {
-        this.position.y -= this.botSpeed;
-      }
+      if (this.isMoveInCourtTop()) {this.position.y -= this.botSpeed;}
     } 
     else {
-      if (this.position.y + this.botSpeed <= canvasHeight) {
-        this.position.y += this.botSpeed;
-      }
+      if (this.isMoveInCourtBottom(canvasHeight)) {this.position.y += this.botSpeed;}
     }
+  }
+
+  humanMove(canvasHeight, moveUpHuman) {
+    if (moveUpHuman) {
+      if (isMoveInCourtTop()) {this.position.y -= this.humanSpeed;}
+    }
+    else {
+      if (isMoveInCourtBottom(canvasHeight)) {this.position.y += this.humanSpeed;}
+    }
+  }
+
+  isMoveInCourtTop() {
+    return this.position.y >= this.humanSpeed;
+  }
+
+  isMoveinCourtBottom(canvasHeight) {
+    return this.position.y + this.humanSpeed <= canvasHeight;
   }
 
   resetPosition(canvasHeight) {
@@ -358,15 +372,15 @@ class Game {
   }
 
   keyboard() {
-    window.addEventListener('keydown', keyboardHandlerFunction); 
+    var pong = this.pong
+    window.addEventListener('keydown', keyboardHandlerFunction);
     function keyboardHandlerFunction(e) {
-      var humanSpeed = 30;
-      if (e.keyCode === 40 && pong.players[0].position.y < (pong._canvas.height - humanSpeed) ) {
-        pong.players[0].position.y += humanSpeed;
-      } 
-      if (e.keyCode === 38 && pong.players[0].position.y > humanSpeed) {
-        pong.players[0].position.y -= humanSpeed;
+      if (e.keyCode === 38) {
+        pong.players[0].humanMove(pong._canvas.height, true);
       }
+      if (e.keyCode === 40) {
+        pong.players[0].humanMove(pong._canvas.height, false);
+      } 
     }
   }
 }
