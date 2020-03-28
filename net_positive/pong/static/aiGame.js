@@ -85,21 +85,6 @@ class Pong {
     this.BotSocket = new BotSocket
   }
 
-  handleWebSocketResponse() {
-    var that = this
-    this.BotSocket.onmessage = function(e) {
-      var data = JSON.parse(e.data);
-      var playerID = parseInt(data.playerID)
-      that.storeMove(data['move'], that.players[playerID])
-    }
-  }
-
-  handleWebSocketClose() {
-    this.BotSocket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
-    }
-  }
-
   run() {
     let lastTime;
     const callback = (milliseconds) => {
@@ -135,6 +120,21 @@ class Pong {
 
     this.reset();
     callback();
+  }
+
+  handleWebSocketResponse() {
+    var that = this
+    this.BotSocket.onmessage = function(e) {
+      var data = JSON.parse(e.data);
+      var playerID = parseInt(data.playerID)
+      that.storeMove(data['move'], that.players[playerID])
+    }
+  }
+
+  handleWebSocketClose() {
+    this.BotSocket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+    }
   }
 
   storeMove(move, player) {
@@ -228,6 +228,18 @@ class Pong {
     }
   }
 
+  collideSides() {
+    if (this.ball.top < 0) {
+      this.ball.velocity.y = -this.ball.velocity.y;
+      this.ball.position.y = this.ballHeight/2
+    }
+
+    if (this.ball.bottom > this._canvas.height) {
+      this.ball.velocity.y = -this.ball.velocity.y;
+      this.ball.position.y = this._canvas.height - this.ballHeight/2
+    }
+  }
+
   draw() {
     this._context.fillStyle = '#000';
     this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
@@ -252,7 +264,6 @@ class Pong {
     if (this.players[0].score < 21 && this.players[1].score < 21) {
       this.start();
     } 
-    
     else {
       this.gameFinished = true;
       this.restartGame(); 
@@ -266,7 +277,7 @@ class Pong {
   }
 
   restartGame() {
-    this.players[1].score === 21 ? this.players[1].game += 1 : this.players[0].game += 1;
+    this.players[1].score === 21 ? this.players[1].game++ : this.players[0].game++;
     this.players[0].score = 0;
     this.players[1].score = 0;
     this.start();
@@ -274,7 +285,7 @@ class Pong {
 
   updateReward() {
     if (this.isPointOver) {
-      this.ball.velocity.x < 0 ? this.aggregateReward += 1: this.aggregateReward += -1;
+      this.ball.velocity.x < 0 ? this.aggregateReward++: this.aggregateReward--;
     }
   }
 
@@ -299,20 +310,8 @@ class Pong {
     $("#player2-game-tally").text(pong.players[1].game)
   }
 
-  collideSides() {
-    if (this.ball.top < 0) {
-      this.ball.velocity.y = -this.ball.velocity.y;
-      this.ball.position.y = this.ballHeight/2
-    }
-
-    if (this.ball.bottom > this._canvas.height) {
-      this.ball.velocity.y = -this.ball.velocity.y;
-      this.ball.position.y = this._canvas.height - this.ballHeight/2
-    }
-  }
-
   botMove(player) {
-    this.repeatActionCountBot += 1;
+    this.repeatActionCountBot++;
     if (player._moveUpBot) {
       if (player.position.y - this.botSpeed >= 0) {
         player.position.y -= this.botSpeed;
