@@ -101,40 +101,39 @@ class Pong {
   }
 
   run(botSocket) {
+    this.reset();
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
-        if (this.players[1].repeatActionCount < 3) {
-          this.botMove(this.players[1]);
-        }
-        if (this.players[0].repeatActionCount < 3 && this.training) {
-          this.botMove(this.players[0]);
-        }
-        this.update((milliseconds - lastTime) / 1000);
+        this.updatePaddles();
+        this.updateGame((milliseconds - lastTime) / 1000);
         this.updateReward();
       }
       lastTime = milliseconds;
-
       requestAnimationFrame(callback);
-
-      if (this.isPointOver) {
-        this.reset();
-      }
-
+      if (this.isPointOver) {this.reset();}
       this.draw();
-  
-      if (botSocket.readyState === 1) {
-        if (this.players[1].responseReceived) {
-          this.getMove(botSocket);
-        }
-        if ((this.training) && (this.players[0].responseReceived)) {
-          this.getTrainingOpponentMove(botSocket);
-        }
-      }   
+      if (botSocket.readyState === 1) {this.getNextBotMoves();}   
     }
-
-    this.reset();
     callback();
+  }
+
+  updatePaddles() {
+    if (this.players[1].repeatActionCount < 3) {
+      this.botMove(this.players[1]);
+    }
+    if (this.players[0].repeatActionCount < 3 && this.training) {
+      this.botMove(this.players[0]);
+    }
+  }
+
+  getNextBotMoves() {
+    if (this.players[1].responseReceived) {
+      this.getMove(botSocket);
+    }
+    if ((this.training) && (this.players[0].responseReceived)) {
+      this.getTrainingOpponentMove(botSocket);
+    }
   }
 
   storeMove(move, player) {
@@ -213,7 +212,7 @@ class Pong {
     return imageArray;
   }
 
-  collide(player, ball) {
+  collidePaddle(player, ball) {
     if (player.left <= ball.right && player.right >= ball.left && player.top <= ball.bottom && player.bottom >= ball.top) {
 
       if (ball.position.x > this._canvas.width/2) {
@@ -289,7 +288,7 @@ class Pong {
     }
   }
 
-  update(deltatime) {
+  updateGame(deltatime) {
     this.ball.position.x += this.ball.velocity.x * deltatime;
     this.ball.position.y += this.ball.velocity.y * deltatime;
 
@@ -300,7 +299,7 @@ class Pong {
 
     this.updateScore()
     this.collideSides()
-    this.players.forEach(player => this.collide(player, this.ball));
+    this.players.forEach(player => this.collidePaddle(player, this.ball));
   }
 
   updateScore() {
