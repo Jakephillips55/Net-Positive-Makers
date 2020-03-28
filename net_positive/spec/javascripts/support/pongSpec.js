@@ -2,21 +2,14 @@
 
 describe('Pong', function() {
   var pong;
-  var testCanvas;
-  var ball;
-  var player;        
-
+  var testCanvas;      
 
   beforeEach(function() {
-   
     testCanvas = document.createElement('canvas')
     testCanvas.width = 320
     testCanvas.height = 320
     testCanvas.id = 'pong'
-  
     pong = new Pong(testCanvas);
-    ball = new Ball(4,8)
-    player = new Player(8,32,36)
   })
 
   describe("canvas dimensions", function() {
@@ -28,19 +21,7 @@ describe('Pong', function() {
     })
   })
 
-  describe("ball", function() {
-    it("renders in the correct size", function() {
-      expect(ball.size.x).toEqual(4)
-      expect(ball.size.y).toEqual(8)
-    })
-  })
-
-  describe("player", function() {
-    it("it renders in the correct size", function() {
-      expect(player.size.x).toEqual(8)
-      expect(player.size.y).toEqual(32)
-    })
-
+  describe("sets player starting position", function() {
     it("renders the players in the correct x position", function() {
       expect(pong.players[0].position.x).toEqual(36)
       expect(pong.players[1].position.x).toEqual(284)
