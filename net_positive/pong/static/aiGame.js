@@ -123,10 +123,10 @@ class Player extends Rectangle {
 
   humanMove(canvasHeight, moveUpHuman) {
     if (moveUpHuman) {
-      if (isMoveInCourtTop()) {this.position.y -= this.humanSpeed;}
+      if (this.isMoveInCourtTop()) {this.position.y -= this.humanSpeed;}
     }
     else {
-      if (isMoveInCourtBottom(canvasHeight)) {this.position.y += this.humanSpeed;}
+      if (this.isMoveInCourtBottom(canvasHeight)) {this.position.y += this.humanSpeed;}
     }
   }
 
@@ -134,7 +134,7 @@ class Player extends Rectangle {
     return this.position.y >= this.humanSpeed;
   }
 
-  isMoveinCourtBottom(canvasHeight) {
+  isMoveInCourtBottom(canvasHeight) {
     return this.position.y + this.humanSpeed <= canvasHeight;
   }
 
