@@ -42,7 +42,7 @@ class Ball extends Rectangle {
 }
 
 class Player extends Rectangle {
-  constructor(w,h) {
+  constructor(w, h) {
     super(w, h);
     this.score = 0;
     this.game = 0;
@@ -58,7 +58,6 @@ class BotSocket extends WebSocket {
     super('ws://' + window.location.host + '/ws/pong/training/')
   }
 }
-
 
 class Pong {
   constructor(canvas) {
@@ -84,27 +83,32 @@ class Pong {
     this.players[0].position.x = this.paddleOffsetStart;
     this.players[1].position.x = this._canvas.width - this.paddleOffsetStart;
     this.BotSocket = new BotSocket
+  }
 
+  handleWebSocketResponse() {
     var that = this
-    
     this.BotSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
       var playerID = parseInt(data.playerID)
       that.storeMove(data['move'], that.players[playerID])
     }
+  }
 
+  handleWebSocketClose() {
     this.BotSocket.onclose = function(e) {
       console.error('Chat socket closed unexpectedly');
     }
+  }
 
+  run() {
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
         if (this.players[1].repeatActionCount < 3) {
-          this.botMove(this.players[1]._moveUpBot, this.players[1]);
+          this.botMove(this.players[1]);
         }
-        if (this.players[0].repeatActionCount < 3 && this.training === true) {
-          this.botMove(this.players[0]._moveUpBot, this.players[0]);
+        if (this.players[0].repeatActionCount < 3 && this.training) {
+          this.botMove(this.players[0]);
         }
         this.update((milliseconds - lastTime) / 1000);
         this.updateReward();
@@ -113,22 +117,17 @@ class Pong {
 
       requestAnimationFrame(callback);
 
-      if (this.isPointOver === true) {
+      if (this.isPointOver) {
         this.reset();
       }
 
       this.draw();
   
       if (this.BotSocket.readyState === 1) {
-        if (this.players[1].responseReceived === true) {
-          // this.draw();
-          // uncomment the above line to see what the bot is seeing
+        if (this.players[1].responseReceived) {
           this.getMove();
-          this.gameFinished = false;
-          this.aggregateReward = 0;
         }
-
-        if ((this.training === true ) && (this.players[0].responseReceived === true)) {
+        if ((this.training) && (this.players[0].responseReceived)) {
           this.getTrainingOpponentMove();
         }
       }   
@@ -153,6 +152,8 @@ class Pong {
       "bot": this.bot,
       "trainingopponent": "false"
       }));
+    this.gameFinished = false;
+    this.aggregateReward = 0;
   }
 
   getTrainingOpponentMove() {
@@ -202,40 +203,18 @@ class Pong {
   }
 
   rgbaToBinary(imageArray) {
-    imageArray = imageArray.filter(function(_, i) {
-      return (i + 1) % 4;
-    })
-    imageArray = imageArray.filter(function(_, i) {
-      return (i + 1) % 3;
-    })
-    imageArray = imageArray.filter(function(_, i) {
-      return (i + 1) % 2;
-    })
-    
-    var everyOtherTime = 0
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 4})
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 3})
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 2})
 
     for (var i = 0, len = imageArray.length; i < len; i++) {
-      if (imageArray[i] < 127.5) {
-        imageArray[i] = 0;
-      }
-      else if (imageArray[i] == 127.5)
-      {
-        if (everyOtherTime % 2 == 0) {
-
-          imageArray[i] = 1;
-          everyotherTime += 1;
-        }
-      }
-      else {
-        imageArray[i] = 1;
-      }
+      imageArray[i] < 127 ? imageArray[i] = 0 : imageArray[i] = 1;
     }
     return imageArray;
   }
 
   collide(player, ball) {
     if (player.left <= ball.right && player.right >= ball.left && player.top <= ball.bottom && player.bottom >= ball.top) {
-      const length = ball.velocity.length
 
       if (ball.position.x > this._canvas.width/2) {
         ball.position.x = this._canvas.width - this.paddleOffsetStart - this.paddleWidth/2;
@@ -243,18 +222,9 @@ class Pong {
       else {
         ball.position.x = this.paddleOffsetStart + this.paddleWidth/2;
       }
-
       ball.velocity.x = -ball.velocity.x;
-      ball.velocity.y += ball.velocity.y * (Math.random() - .5);
-
-      // ball and paddle collision like the actual Atari Pong
-      // var relativeIntersectY = player.position.y - ball.position.y;
-      // var normalizedRelativeIntersectionY = relativeIntersectY/(32/2);
-      // var bounceAngle = normalizedRelativeIntersectionY * 5 * Math.PI / 12;
-      // ball.velocity.x = ball.velocity.length * Math.cos(bounceAngle);
-      // ball.velocity.y = ball.velocity.length * - Math.sin(bounceAngle);
-
-      ball.velocity.length = length * 1.05; 
+      ball.velocity.y += ball.velocity.y * (Math.random() - 0.5);
+      ball.velocity.length *= 1.05; 
     }
   }
 
@@ -290,31 +260,21 @@ class Pong {
   }
 
   start() {
-      this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
-      this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
-      this.ball.velocity.length = this.serveSpeed;
+    this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
+    this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
+    this.ball.velocity.length = this.serveSpeed;
   }
 
   restartGame() {
-      if (this.players[1].score === 21) {
-        this.players[1].game += 1
-      }
-      else {
-        this.players[1].game += 1
-      }
-      this.players[0].score = 0;
-      this.players[1].score = 0;
-      this.start();
+    this.players[1].score === 21 ? this.players[1].game += 1 : this.players[0].game += 1;
+    this.players[0].score = 0;
+    this.players[1].score = 0;
+    this.start();
   }
 
   updateReward() {
-    if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
-      if (this.ball.velocity.x < 0) {
-        this.aggregateReward += 1;
-      } 
-      else {
-        this.aggregateReward += -1;
-      }
+    if (this.isPointOver) {
+      this.ball.velocity.x < 0 ? this.aggregateReward += 1: this.aggregateReward += -1;
     }
   }
 
@@ -323,14 +283,10 @@ class Pong {
     this.ball.position.y += this.ball.velocity.y * deltatime;
 
     if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
-      if (this.ball.velocity.x < 0) {
-        this.players[1].score++;
-      } 
-      else {
-        this.players[0].score++;
-      }
+      this.ball.velocity.x < 0 ? this.players[1].score++ : this.players[0].score++;
       this.isPointOver = true;
     }
+
     this.updateScore()
     this.collideSides()
     this.players.forEach(player => this.collide(player, this.ball));
@@ -355,9 +311,9 @@ class Pong {
     }
   }
 
-  botMove(move, player) {
+  botMove(player) {
     this.repeatActionCountBot += 1;
-    if (move === true) {
+    if (player._moveUpBot) {
       if (player.position.y - this.botSpeed >= 0) {
         player.position.y -= this.botSpeed;
       }
@@ -374,6 +330,9 @@ class Game {
 
   constructor(pong) {
     this.pong = pong;
+    pong.handleWebSocketResponse();
+    pong.handleWebSocketClose();
+    pong.run();
   }
 
   keyboard() {
@@ -383,7 +342,7 @@ class Game {
       if (e.keyCode === 40 && pong.players[0].position.y < (pong._canvas.height - humanSpeed) ) {
         pong.players[0].position.y += humanSpeed;
       } 
-      else if (e.keyCode === 38 && pong.players[0].position.y > humanSpeed) {
+      if (e.keyCode === 38 && pong.players[0].position.y > humanSpeed) {
         pong.players[0].position.y -= humanSpeed;
       }
     }
