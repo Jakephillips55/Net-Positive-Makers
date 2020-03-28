@@ -10,66 +10,45 @@ describe('Pong', function() {
   beforeEach(function() {
    
     testCanvas = document.createElement('canvas')
-    testCanvas.width = 150
-    testCanvas.height = 150
+    testCanvas.width = 320
+    testCanvas.height = 320
     testCanvas.id = 'pong'
   
     pong = new Pong(testCanvas);
-    ball = new Ball()
-    player = new Player()
+    ball = new Ball(4,8)
+    player = new Player(8,32,36)
   })
 
   describe("canvas dimensions", function() {
     it("draws the correct height", function() {
-      expect(pong._canvas.height).toEqual(150)
+      expect(pong._canvas.height).toEqual(320)
     })
     it("draws the correct width", function() {
-      expect(pong._canvas.width).toEqual(150)
+      expect(pong._canvas.width).toEqual(320)
     })
   })
 
   describe("ball", function() {
     it("renders in the correct size", function() {
-      expect(ball.size.x).toEqual(10)
-      expect(ball.size.y).toEqual(10)
+      expect(ball.size.x).toEqual(4)
+      expect(ball.size.y).toEqual(8)
     })
   })
 
   describe("player", function() {
     it("it renders in the correct size", function() {
-      player = new Player()
-      expect(player.size.x).toEqual(20)
-      expect(player.size.y).toEqual(100)
+      expect(player.size.x).toEqual(8)
+      expect(player.size.y).toEqual(32)
     })
 
     it("renders the players in the correct x position", function() {
-      expect(pong.players[0].position.x).toEqual(20)
-      expect(pong.players[1].position.x).toEqual(130)
+      expect(pong.players[0].position.x).toEqual(36)
+      expect(pong.players[1].position.x).toEqual(284)
     })
 
     it("renders the players in the correct y position", function() {
-      expect(pong.players[0].position.y).toEqual(75)
-      expect(pong.players[1].position.y).toEqual(75)
+      expect(pong.players[0].position.y).toEqual(160)
+      expect(pong.players[1].position.y).toEqual(160)
     })
   })
-  
-  // describe("getMove", function() {
-  //  it("should communicate data with XHR request", function() {
-
-  //   var xhr = {
-
-  //      open: jasmine.createSpy('open')
-  //  };
-
-  //  XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
-  //  XMLHttpRequest.and.callFake(function () {
-  //      return xhr;
-
-  //  });
-
-  //  submit();
-
-  //  expect(xhr.open).toHaveBeenCalled(); 
-  //   })
-  // })
 });
