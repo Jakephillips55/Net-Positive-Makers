@@ -145,18 +145,21 @@ class Player extends Rectangle {
 
 
 class BotSocket extends WebSocket {
-  constructor(pong) {
-    super('ws://' + window.location.host + '/ws/pong/training/')
+  constructor(pong, url) {
+    super(url);
     this.pong = pong;
   }
 
   handleWebSocketResponse() {
-    var pong = this.pong;
     this.onmessage = function(e) {
-      var data = JSON.parse(e.data);
-      var playerID = parseInt(data.playerID)
-      pong.players[playerID].storeMove(data['move'])
+      this.parseAndStore(e.data);
     }
+  }
+
+  parseAndStore(response) {
+    var response = JSON.parse(response);
+    var playerID = parseInt(response.playerID);
+    this.pong.players[playerID].storeMove(response['moveup']);
   }
 
   handleWebSocketClose() {
@@ -234,7 +237,7 @@ class Pong {
       "done": this.gameFinished,
       "bot": this.bot,
       "trainingopponent": "false"
-      }));
+    }));
     this.gameFinished = false;
     this.aggregateReward = 0;
   }
@@ -247,7 +250,7 @@ class Pong {
       "done": "dummy",
       "bot": this.trainingOpponent,
       "trainingopponent": "true"
-      }));
+    }));
   }
 
   retrieveGameData(player) {
@@ -387,7 +390,7 @@ class Game {
 
 const canvas = document.getElementById('pong');
 const pong = new Pong(canvas);
-const botSocket = new BotSocket(pong);
+const botSocket = new BotSocket(pong, 'ws://' + window.location.host + '/ws/pong/training/');
 const game = new Game(pong, botSocket);
 game.run();
 

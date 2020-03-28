@@ -37,51 +37,51 @@ class PongConsumer(WebsocketConsumer):
         image = list(image)
         
         if trainingopponent == "true":
-          move = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
+          move_up = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
           self.send(text_data=json.dumps({
-          'move': move,
+          'moveup': move_up,
           'playerID': 0
           }))
         else:
           if bot == "student":
-            move = AndrejBotTraining.andrej_training(image, reward, done)
+            move_up = AndrejBotTraining.andrej_training(image, reward, done)
             self.send(text_data=json.dumps({
-            'move': move,
+            'moveup': move_up,
             'playerID': 1
             }))
 
           if bot == "steffi-graph":
-            move = PerfectBot.perfect_bot_ws(bally, paddley)
+            move_up = PerfectBot.perfect_bot_ws(bally, paddley)
             self.send(text_data=json.dumps({
-            'move': move,
+            'moveup': move_up,
             'playerID': 1
             }))
           
           if bot == "nodevak-djokovic":
-            move = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
+            move_up = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
             self.send(text_data=json.dumps({
-            'move': move,
+            'moveup': move_up,
             'playerID': 1
           }))
 
           if bot == "rl-federer":
-            move = AndrejBot.andrej_bot(image)
+            move_up = AndrejBot.andrej_bot(image)
             self.send(text_data=json.dumps({
-            'move': move,
+            'moveup': move_up,
             'playerID': 1 
             }))
           
           if bot == "andrai-agassi":
-            move = FaultyBot.faulty_bot_ws(bally, paddley)
+            move_up = FaultyBot.faulty_bot_ws(bally, paddley)
             self.send(text_data=json.dumps({
-            'move': move,
+            'moveup': move_up,
             'playerID': 1 
             }))
 
           if bot == "bjorn-cyborg":
-            move = Junior.junior_bot(image)
+            move_up = Junior.junior_bot(image)
             self.send(text_data=json.dumps({
-            'move': move,
+            'moveup': move_up,
             'playerID': 1 
           }))
 
