@@ -54,8 +54,24 @@ class Player extends Rectangle {
 }
 
 class BotSocket extends WebSocket {
-  constructor() {
+  constructor(pong) {
     super('ws://' + window.location.host + '/ws/pong/training/')
+    this.pong = pong;
+  }
+
+  handleWebSocketResponse() {
+    var pong = this.pong;
+    this.onmessage = function(e) {
+      var data = JSON.parse(e.data);
+      var playerID = parseInt(data.playerID)
+      pong.storeMove(data['move'], pong.players[playerID])
+    }
+  }
+
+  handleWebSocketClose() {
+    this.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+    }
   }
 }
 
@@ -82,10 +98,9 @@ class Pong {
     this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
     this.players[0].position.x = this.paddleOffsetStart;
     this.players[1].position.x = this._canvas.width - this.paddleOffsetStart;
-    this.BotSocket = new BotSocket
   }
 
-  run() {
+  run(botSocket) {
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
@@ -108,12 +123,12 @@ class Pong {
 
       this.draw();
   
-      if (this.BotSocket.readyState === 1) {
+      if (botSocket.readyState === 1) {
         if (this.players[1].responseReceived) {
-          this.getMove();
+          this.getMove(botSocket);
         }
         if ((this.training) && (this.players[0].responseReceived)) {
-          this.getTrainingOpponentMove();
+          this.getTrainingOpponentMove(botSocket);
         }
       }   
     }
@@ -122,30 +137,15 @@ class Pong {
     callback();
   }
 
-  handleWebSocketResponse() {
-    var that = this
-    this.BotSocket.onmessage = function(e) {
-      var data = JSON.parse(e.data);
-      var playerID = parseInt(data.playerID)
-      that.storeMove(data['move'], that.players[playerID])
-    }
-  }
-
-  handleWebSocketClose() {
-    this.BotSocket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
-    }
-  }
-
   storeMove(move, player) {
     player._moveUpBot = move;
     player.responseReceived = true;
     player.repeatActionCount = 0;
   }
 
-  getMove() {
+  getMove(botSocket) {
     this.players[1].responseReceived = false;
-    this.BotSocket.send(JSON.stringify({
+    botSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[1]),
       "image": this.retrievePixelData(),
       "done": this.gameFinished,
@@ -156,9 +156,9 @@ class Pong {
     this.aggregateReward = 0;
   }
 
-  getTrainingOpponentMove() {
+  getTrainingOpponentMove(botSocket) {
     this.players[0].responseReceived = false;
-    this.BotSocket.send(JSON.stringify({
+    botSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[0]),
       "image": "dummy",
       "done": "dummy",
@@ -327,11 +327,16 @@ class Pong {
 
 class Game {
 
-  constructor(pong) {
+  constructor(pong, botSocket) {
     this.pong = pong;
-    pong.handleWebSocketResponse();
-    pong.handleWebSocketClose();
-    pong.run();
+    this.botSocket = botSocket;
+  }
+
+  run() {
+    this.botSocket.handleWebSocketResponse();
+    this.botSocket.handleWebSocketClose();
+    this.pong.run(this.botSocket);
+    this.keyboard();
   }
 
   keyboard() {
@@ -350,5 +355,7 @@ class Game {
 
 const canvas = document.getElementById('pong');
 const pong = new Pong(canvas);
-const game = new Game(pong);
-game.keyboard();
+const botSocket = new BotSocket(pong);
+const game = new Game(pong, botSocket);
+game.run();
+
