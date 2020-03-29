@@ -1,19 +1,19 @@
 "use strict";
 
 describe('botSocket', function() {
-  var testCanvas; 
-  var pong;
+  var paddleWidth = 8;
+  var paddleHeight = 32;
+  var paddleOffsetStart = 36;
+  var player1;
+  var player2;
   var botSocket;
   
   beforeEach(function() {
-    testCanvas = document.createElement('canvas')
-    testCanvas.width = 320
-    testCanvas.height = 320
-    testCanvas.id = 'pong'
-    pong = new Pong(testCanvas);
-    botSocket = new BotSocket(pong, 'ws://testurl:8000');
-    spyOn(pong.players[0], "storeMove");
-    spyOn(pong.players[1], "storeMove");
+    player1 = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
+    spyOn(player1, "storeMove");
+    player2 = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
+    spyOn(player2, "storeMove");
+    botSocket = new BotSocket('ws://testurl:8000', player1, player2);
   })
 
   describe("parseAndStore", function() {
@@ -23,7 +23,7 @@ describe('botSocket', function() {
         'playerID': 0
       })
       botSocket.parseAndStore(response);
-      expect(pong.players[0].storeMove).toHaveBeenCalledWith(true);
+      expect(player1.storeMove).toHaveBeenCalledWith(true);
     })
 
     it("stores moveup true against second player", function() {
@@ -32,7 +32,7 @@ describe('botSocket', function() {
         'playerID': 1
       })
       botSocket.parseAndStore(response);
-      expect(pong.players[1].storeMove).toHaveBeenCalledWith(true);
+      expect(player2.storeMove).toHaveBeenCalledWith(true);
     })
 
     it("stores moveup false against first player", function() {
@@ -41,7 +41,7 @@ describe('botSocket', function() {
         'playerID': 0
       })
       botSocket.parseAndStore(response);
-      expect(pong.players[0].storeMove).toHaveBeenCalledWith(false);
+      expect(player1.storeMove).toHaveBeenCalledWith(false);
     })
 
     it("stores moveup false against second player", function() {
@@ -50,7 +50,7 @@ describe('botSocket', function() {
         'playerID': 1
       })
       botSocket.parseAndStore(response);
-      expect(pong.players[1].storeMove).toHaveBeenCalledWith(false);
+      expect(player2.storeMove).toHaveBeenCalledWith(false);
     })
   })
 });

@@ -65,14 +65,14 @@ class Ball extends Rectangle {
   collideTop() {
     if (this.top < 0) {
       this.velocity.y = -this.velocity.y;
-      this.position.y = this.size.y/2
+      this.position.y = this.size.y/2;
     }
   }
 
   collideBottom(canvasHeight) {
     if (this.bottom > canvasHeight) {
       this.velocity.y = -this.velocity.y;
-      this.position.y = canvasHeight - this.size.y/2
+      this.position.y = canvasHeight - this.size.y/2;
     }
   }
 
@@ -156,9 +156,9 @@ class Player extends Rectangle {
 }
 
 class BotSocket extends WebSocket {
-  constructor(pong, url) {
+  constructor(url, player1, player2) {
     super(url);
-    this.pong = pong;
+    this.players = [player1, player2];
   }
 
   handleWebSocketResponse() {
@@ -170,7 +170,7 @@ class BotSocket extends WebSocket {
   parseAndStore(response) {
     var response = JSON.parse(response);
     var playerID = parseInt(response.playerID);
-    this.pong.players[playerID].storeMove(response['moveup']);
+    this.players[playerID].storeMove(response['moveup']);
   }
 
   handleWebSocketClose() {
@@ -225,12 +225,7 @@ class ImageProcessor {
 }
 
 class Pong {
-  constructor(canvas) {
-    this.ballHeight = 8;
-    this.ballWidth = 4;
-    this.paddleHeight = 32;
-    this.paddleWidth = 8;
-    this.paddleOffsetStart = 36;
+  constructor(canvas, imageProcessor, ball, player1, player2) {
     this.serveSpeed = 200;
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
@@ -240,16 +235,13 @@ class Pong {
     this.trainingOpponent = 'nodevak-djokovic';
     this.isPointOver = false;
     this.aggregateReward = 0;
-    this.imageProcessor = new ImageProcessor
-    this.ball = new Ball(this.ballWidth, this.ballHeight);
-    this.players = [new Player(this.paddleWidth, this.paddleHeight, this.paddleOffsetStart),
-                    new Player(this.paddleWidth, this.paddleHeight, this.paddleOffsetStart)];
-    this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
-    this.players[0].position.x = this.paddleOffsetStart;
-    this.players[1].position.x = this._canvas.width - this.paddleOffsetStart;
+    this.imageProcessor = imageProcessor;
+    this.ball = ball;
+    this.players = [player1, player2];
   }
 
   run(botSocket) {
+    this.setPaddlesInitially()
     this.reset();
     let lastTime;
     const callback = (milliseconds) => {
@@ -265,6 +257,12 @@ class Pong {
       if (botSocket.readyState === 1) {this.getNextBotMoves();}   
     }
     callback();
+  }
+
+  setPaddlesInitially() {
+    this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
+    this.players[0].position.x = this.players[0].paddleOffsetStart;
+    this.players[1].position.x = this._canvas.width - this.players[1].paddleOffsetStart;
   }
 
   updatePaddles() {

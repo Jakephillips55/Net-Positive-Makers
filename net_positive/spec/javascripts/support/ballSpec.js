@@ -1,18 +1,17 @@
 "use strict";
 
 describe('Ball', function() {
-  var ballWidth = 4;
-  var ballHeight = 8;
-  var ball;
   var paddleWidth = 8;
   var paddleHeight = 32;
   var paddleOffsetStart = 36;
   var player;
   var player2;
+  var ballWidth = 4;
+  var ballHeight = 8;
+  var ball;
   
 
   beforeEach(function() {
-    ball = new Ball(ballWidth, ballHeight);
     player = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
     spyOnProperty(player, 'top', 'get').and.returnValue(144);
     spyOnProperty(player, 'bottom', 'get').and.returnValue(176);
@@ -23,6 +22,7 @@ describe('Ball', function() {
     spyOnProperty(player2, 'bottom', 'get').and.returnValue(176);
     spyOnProperty(player2, 'left', 'get').and.returnValue(280);
     spyOnProperty(player2, 'right', 'get').and.returnValue(288);
+    ball = new Ball(ballWidth, ballHeight);
   })
 
   describe("initialize", function() {

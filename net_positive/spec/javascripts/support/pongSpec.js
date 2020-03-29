@@ -1,35 +1,40 @@
 "use strict";
 
 describe('Pong', function() {
-  var testCanvas;  
+  var testCanvas;
+  var imageProcessor;
+  var ball;
+  var paddleWidth = 8;
+  var paddleHeight = 32;
+  var paddleOffsetStart = 36;
+  var player1;
+  var player2;
   var pong;
+  
       
   beforeEach(function() {
-    testCanvas = document.createElement('canvas')
-    testCanvas.width = 320
-    testCanvas.height = 320
-    testCanvas.id = 'pong'
-    pong = new Pong(testCanvas);
+    testCanvas = document.createElement('canvas');
+    spyOn(testCanvas, 'getContext').and.returnValue('testcontext');
+    spyOnProperty(testCanvas, 'width', 'get').and.returnValue(320);
+    spyOnProperty(testCanvas, 'height', 'get').and.returnValue(320);
+    imageProcessor = 'testImageProcessor';
+    ball = 'testBall';
+    player1 = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
+    player2 = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
+    pong = new Pong(testCanvas, imageProcessor, ball, player1, player2);
   })
 
-  describe("canvas dimensions", function() {
-    it("draws the correct height", function() {
-      expect(pong._canvas.height).toEqual(320)
-    })
-    it("draws the correct width", function() {
-      expect(pong._canvas.width).toEqual(320)
-    })
-  })
-
-  describe("sets player starting position", function() {
+  describe("setPaddlesInitially", function() {
     it("renders the players in the correct x position", function() {
-      expect(pong.players[0].position.x).toEqual(36)
-      expect(pong.players[1].position.x).toEqual(284)
+      pong.setPaddlesInitially();
+      expect(pong.players[0].position.x).toEqual(36);
+      expect(pong.players[1].position.x).toEqual(284);
     })
 
     it("renders the players in the correct y position", function() {
-      expect(pong.players[0].position.y).toEqual(160)
-      expect(pong.players[1].position.y).toEqual(160)
+      pong.setPaddlesInitially();
+      expect(pong.players[0].position.y).toEqual(160);
+      expect(pong.players[1].position.y).toEqual(160);
     })
   })
 });
