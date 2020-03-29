@@ -1,0 +1,155 @@
+"use strict";
+
+class Pong {
+  constructor(canvas, imageProcessor, ball, player1, player2) {
+    this.serveSpeed = 200;
+    this._canvas = canvas;
+    this._context = canvas.getContext('2d');
+    this.gameFinished = false;
+    this.training = false;
+    this.bot = 'rl-federer';
+    this.trainingOpponent = 'nodevak-djokovic';
+    this.isPointOver = false;
+    this.aggregateReward = 0;
+    this.imageProcessor = imageProcessor;
+    this.ball = ball;
+    this.players = [player1, player2];
+  }
+
+  run(botSocket) {
+    this.setPaddlesInitially()
+    this.reset();
+    let lastTime;
+    const callback = (milliseconds) => {
+      if (lastTime) {
+        this.updatePaddles();
+        this.updateGame((milliseconds - lastTime) / 1000);
+        this.updateReward();
+      }
+      lastTime = milliseconds;
+      requestAnimationFrame(callback);
+      if (this.isPointOver) {this.reset();}
+      this.draw();
+      if (botSocket.readyState === 1) {this.getNextBotMoves();}   
+    }
+    callback();
+  }
+
+  setPaddlesInitially() {
+    this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
+    this.players[0].position.x = this.players[0].paddleOffsetStart;
+    this.players[1].position.x = this._canvas.width - this.players[1].paddleOffsetStart;
+  }
+
+  updatePaddles() {
+    if (this.players[1].repeatActionCount < 3) {
+      this.players[1].botMove(this._canvas.height);
+    }
+    if (this.players[0].repeatActionCount < 3 && this.training) {
+      this.players[0].botMove(this._canvas.height);
+    }
+  }
+
+  getNextBotMoves() {
+    if (this.players[1].responseReceived) {
+      this.getBotMove(botSocket);
+    }
+    if ((this.training) && (this.players[0].responseReceived)) {
+      this.getTrainingOpponentMove(botSocket);
+    }
+  }
+
+  getBotMove(botSocket) {
+    this.players[1].responseReceived = false;
+    botSocket.send(JSON.stringify({
+      "court": this.retrieveGameData(this.players[1]),
+      "image": this.imageProcessor.retrievePixelData(this._context),
+      "done": this.gameFinished,
+      "bot": this.bot,
+      "trainingopponent": "false"
+    }));
+    this.gameFinished = false;
+    this.aggregateReward = 0;
+  }
+
+  getTrainingOpponentMove(botSocket) {
+    this.players[0].responseReceived = false;
+    botSocket.send(JSON.stringify({
+      "court": this.retrieveGameData(this.players[0]),
+      "image": "dummy",
+      "done": "dummy",
+      "bot": this.trainingOpponent,
+      "trainingopponent": "true"
+    }));
+  }
+
+  retrieveGameData(player) {
+    var bally = Math.round(this.ball.position.y);
+    var paddley = player.position.y;
+    var reward = this.aggregateReward;
+    var court = `{"bally": ${bally}, "paddley": ${paddley}, "reward": ${reward}}`;
+    return court;
+  }
+
+  draw() {
+    this._context.fillStyle = '#000';
+    this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+    this.drawRectangle(this.ball);
+    this.players.forEach(player => this.drawRectangle(player));
+  }
+
+  drawRectangle(rectangle) {
+    this._context.fillStyle = '#fff';
+    this._context.fillRect(rectangle.left, rectangle.top, rectangle.size.x, rectangle.size.y);
+  }
+
+  reset() {
+    this.ball.resetPosition(this._canvas.width, this._canvas.height);
+    this.players[0].resetPosition(this._canvas.height)
+    this.players[1].resetPosition(this._canvas.height)
+    this.isPointOver = false;
+
+    if (this.players[0].score < 21 && this.players[1].score < 21) {
+      this.ball.serve(this.serveSpeed);
+    } 
+    else {
+      this.gameFinished = true;
+      this.restartGame(); 
+    }
+  }
+
+  restartGame() {
+    this.players[1].score === 21 ? this.players[1].game++ : this.players[0].game++;
+    this.players[0].score = 0;
+    this.players[1].score = 0;
+    this.ball.serve(this.serveSpeed);
+  }
+
+  updateReward() {
+    if (this.isPointOver) {
+      this.ball.velocity.x < 0 ? this.aggregateReward++: this.aggregateReward--;
+    }
+  }
+
+  updateGame(deltatime) {
+    this.ball.updatePosition(deltatime);
+    this.ball.collideTop();
+    this.ball.collideBottom(this._canvas.height);
+    this.ball.collideLeftPaddle(this.players[0]);
+    this.ball.collideRightPaddle(this.players[1], this._canvas.width);
+    this.updateScore();
+    
+  }
+
+  updateScore() {
+    if (this.ball.isOutOfPlay(this._canvas.width)) {
+      this.ball.velocity.x < 0 ? this.players[1].score++ : this.players[0].score++;
+      this.isPointOver = true;
+    }
+
+    $("#player1tally").text(pong.players[0].score)
+    $("#player2tally").text(pong.players[1].score)
+    $("#player1-game-tally").text(pong.players[0].game)
+    $("#player2-game-tally").text(pong.players[1].game)
+  }
+}
