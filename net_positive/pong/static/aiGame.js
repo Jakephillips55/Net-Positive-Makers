@@ -112,20 +112,22 @@ class Player extends Rectangle {
 
   botMove(canvasHeight) {
     this.repeatActionCount++;
-    if (this._moveUpBot) {
-      if (this.isMoveInCourtTop(this.botSpeed)) {this.position.y -= this.botSpeed;}
-    } 
-    else {
-      if (this.isMoveInCourtBottom(this.botSpeed, canvasHeight)) {this.position.y += this.botSpeed;}
-    }
+    this._moveUpBot ? this.moveUp(this.botSpeed) : this.moveDown(this.botSpeed, canvasHeight);
   }
 
   humanMove(canvasHeight, moveUpHuman) {
-    if (moveUpHuman) {
-      if (this.isMoveInCourtTop(this.humanSpeed)) {this.position.y -= this.humanSpeed;}
+    moveUpHuman? this.moveUp(this.humanSpeed) : this.moveDown(this.humanSpeed, canvasHeight)
+  }
+
+  moveUp(moveSpeed) {
+    if (this.isMoveInCourtTop(moveSpeed)) {
+      this.position.y -= this.botSpeed;
     }
-    else {
-      if (this.isMoveInCourtBottom(this.humanSpeed, canvasHeight)) {this.position.y += this.humanSpeed;}
+  }
+
+  moveDown(moveSpeed) {
+    if (this.isMoveInCourtBottom(moveSpeed, canvasHeight)) {
+      this.position.y += this.botSpeed;
     }
   }
 
@@ -141,7 +143,6 @@ class Player extends Rectangle {
     this.position.y = canvasHeight / 2;
   }
 }
-
 
 class BotSocket extends WebSocket {
   constructor(pong, url) {
