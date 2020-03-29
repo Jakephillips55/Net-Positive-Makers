@@ -39,23 +39,133 @@ class Ball extends Rectangle {
     super(w, h);
     this.velocity = new Vector;
   }
+
+  resetPosition(canvasWidth, canvasHeight) {
+    this.position.x = canvasWidth / 2;
+    this.position.y = canvasHeight / 2;
+    this.velocity.x = 0;
+    this.velocity.y = 0;
+  }
+
+  updatePosition(deltatime) {
+    this.position.x += this.velocity.x * deltatime;
+    this.position.y += this.velocity.y * deltatime;
+  }
+
+  isOutOfPlay(canvasWidth) {
+    return this.left < 0 || this.right > canvasWidth;
+  }
+
+  serve(serveSpeed) {
+    this.velocity.x = (Math.random() > .5 ? 1 : -1);
+    this.velocity.y = (Math.random() > .5 ? 1 : -1);
+    this.velocity.length = serveSpeed;
+  }
+
+  collideSides(canvasHeight) {
+    if (this.top < 0) {
+      this.velocity.y = -this.velocity.y;
+      this.position.y = this.size.y/2
+    }
+
+    if (this.bottom > canvasHeight) {
+      this.velocity.y = -this.velocity.y;
+      this.position.y = canvasHeight - this.size.y/2
+    }
+  }
+
+  collidePaddle(player, canvasWidth) {
+    if (player.left <= this.right && player.right >= this.left && player.top <= this.bottom && player.bottom >= this.top) {
+      //move ball back to the face of the paddle
+      if (this.position.x > canvasWidth/2) {
+        this.position.x = canvasWidth - player.paddleOffsetStart - player.size.x/2;
+      }
+      else {
+        this.position.x = player.paddleOffsetStart + player.size.x/2;
+      }
+      //reverse x velocity, add some randomness on top of existing y velocity, speed up by 5%
+      this.velocity.x = -this.velocity.x;
+      this.velocity.y += this.velocity.y * (Math.random() - 0.5);
+      this.velocity.length *= 1.05; 
+    }
+  }
 }
 
 class Player extends Rectangle {
-  constructor(w, h) {
+  constructor(w, h, paddleOffsetStart) {
     super(w, h);
     this.score = 0;
     this.game = 0;
+    this.botSpeed = 12;
+    this.humanSpeed = 30;
     this.velocity = new Vector;
     this.repeatActionCount = 0;
     this._moveUpBot = '';
     this.responseReceived = true;
+    this.paddleOffsetStart = paddleOffsetStart;
+  }
+
+  storeMove(move) {
+    this._moveUpBot = move;
+    this.responseReceived = true;
+    this.repeatActionCount = 0;
+  }
+
+  botMove(canvasHeight) {
+    this.repeatActionCount++;
+    if (this._moveUpBot) {
+      if (this.isMoveInCourtTop()) {this.position.y -= this.botSpeed;}
+    } 
+    else {
+      if (this.isMoveInCourtBottom(canvasHeight)) {this.position.y += this.botSpeed;}
+    }
+  }
+
+  humanMove(canvasHeight, moveUpHuman) {
+    if (moveUpHuman) {
+      if (this.isMoveInCourtTop()) {this.position.y -= this.humanSpeed;}
+    }
+    else {
+      if (this.isMoveInCourtBottom(canvasHeight)) {this.position.y += this.humanSpeed;}
+    }
+  }
+
+  isMoveInCourtTop() {
+    return this.position.y >= this.humanSpeed;
+  }
+
+  isMoveInCourtBottom(canvasHeight) {
+    return this.position.y + this.humanSpeed <= canvasHeight;
+  }
+
+  resetPosition(canvasHeight) {
+    this.position.y = canvasHeight / 2;
   }
 }
 
+
 class BotSocket extends WebSocket {
-  constructor() {
-    super('ws://' + window.location.host + '/ws/pong/training/')
+  constructor(pong, url) {
+    super(url);
+    this.pong = pong;
+  }
+
+  handleWebSocketResponse() {
+    this.onmessage = function(e) {
+      this.parseAndStore(e.data);
+    }
+  }
+
+  parseAndStore(response) {
+    var response = JSON.parse(response);
+    var playerID = parseInt(response.playerID);
+    this.pong.players[playerID].storeMove(response['moveup']);
+  }
+
+  handleWebSocketClose() {
+    this.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+    }
   }
 }
 
@@ -65,106 +175,82 @@ class Pong {
     this.ballWidth = 4;
     this.paddleHeight = 32;
     this.paddleWidth = 8;
-    this.botSpeed = 12;
     this.paddleOffsetStart = 36;
     this.serveSpeed = 200;
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
-    this.ball = new Ball(this.ballWidth, this.ballHeight);
     this.gameFinished = false;
     this.training = false;
     this.bot = 'rl-federer';
     this.trainingOpponent = 'nodevak-djokovic';
     this.isPointOver = false;
     this.aggregateReward = 0;
-    this.players = [new Player(this.paddleWidth, this.paddleHeight),
-                    new Player(this.paddleWidth, this.paddleHeight)];
+    this.ball = new Ball(this.ballWidth, this.ballHeight);
+    this.players = [new Player(this.paddleWidth, this.paddleHeight, this.paddleOffsetStart),
+                    new Player(this.paddleWidth, this.paddleHeight, this.paddleOffsetStart)];
     this.players.forEach( player => { player.position.y = this._canvas.height / 2 });
     this.players[0].position.x = this.paddleOffsetStart;
     this.players[1].position.x = this._canvas.width - this.paddleOffsetStart;
-    this.BotSocket = new BotSocket
   }
 
-  handleWebSocketResponse() {
-    var that = this
-    this.BotSocket.onmessage = function(e) {
-      var data = JSON.parse(e.data);
-      var playerID = parseInt(data.playerID)
-      that.storeMove(data['move'], that.players[playerID])
-    }
-  }
-
-  handleWebSocketClose() {
-    this.BotSocket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
-    }
-  }
-
-  run() {
+  run(botSocket) {
+    this.reset();
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
-        if (this.players[1].repeatActionCount < 3) {
-          this.botMove(this.players[1]);
-        }
-        if (this.players[0].repeatActionCount < 3 && this.training) {
-          this.botMove(this.players[0]);
-        }
-        this.update((milliseconds - lastTime) / 1000);
+        this.updatePaddles();
+        this.updateGame((milliseconds - lastTime) / 1000);
         this.updateReward();
       }
       lastTime = milliseconds;
-
       requestAnimationFrame(callback);
-
-      if (this.isPointOver) {
-        this.reset();
-      }
-
+      if (this.isPointOver) {this.reset();}
       this.draw();
-  
-      if (this.BotSocket.readyState === 1) {
-        if (this.players[1].responseReceived) {
-          this.getMove();
-        }
-        if ((this.training) && (this.players[0].responseReceived)) {
-          this.getTrainingOpponentMove();
-        }
-      }   
+      if (botSocket.readyState === 1) {this.getNextBotMoves();}   
     }
-
-    this.reset();
     callback();
   }
 
-  storeMove(move, player) {
-    player._moveUpBot = move;
-    player.responseReceived = true;
-    player.repeatActionCount = 0;
+  updatePaddles() {
+    if (this.players[1].repeatActionCount < 3) {
+      this.players[1].botMove(this._canvas.height);
+    }
+    if (this.players[0].repeatActionCount < 3 && this.training) {
+      this.players[0].botMove(this._canvas.height);
+    }
   }
 
-  getMove() {
+  getNextBotMoves() {
+    if (this.players[1].responseReceived) {
+      this.getBotMove(botSocket);
+    }
+    if ((this.training) && (this.players[0].responseReceived)) {
+      this.getTrainingOpponentMove(botSocket);
+    }
+  }
+
+  getBotMove(botSocket) {
     this.players[1].responseReceived = false;
-    this.BotSocket.send(JSON.stringify({
+    botSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[1]),
       "image": this.retrievePixelData(),
       "done": this.gameFinished,
       "bot": this.bot,
       "trainingopponent": "false"
-      }));
+    }));
     this.gameFinished = false;
     this.aggregateReward = 0;
   }
 
-  getTrainingOpponentMove() {
+  getTrainingOpponentMove(botSocket) {
     this.players[0].responseReceived = false;
-    this.BotSocket.send(JSON.stringify({
+    botSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[0]),
       "image": "dummy",
       "done": "dummy",
       "bot": this.trainingOpponent,
       "trainingopponent": "true"
-      }));
+    }));
   }
 
   retrieveGameData(player) {
@@ -213,21 +299,6 @@ class Pong {
     return imageArray;
   }
 
-  collide(player, ball) {
-    if (player.left <= ball.right && player.right >= ball.left && player.top <= ball.bottom && player.bottom >= ball.top) {
-
-      if (ball.position.x > this._canvas.width/2) {
-        ball.position.x = this._canvas.width - this.paddleOffsetStart - this.paddleWidth/2;
-      }
-      else {
-        ball.position.x = this.paddleOffsetStart + this.paddleWidth/2;
-      }
-      ball.velocity.x = -ball.velocity.x;
-      ball.velocity.y += ball.velocity.y * (Math.random() - 0.5);
-      ball.velocity.length *= 1.05; 
-    }
-  }
-
   draw() {
     this._context.fillStyle = '#000';
     this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
@@ -241,55 +312,44 @@ class Pong {
   }
 
   reset() {
-    this.ball.position.x = this._canvas.width / 2;
-    this.ball.position.y = this._canvas.height / 2;
-    this.ball.velocity.x = 0;
-    this.ball.velocity.y = 0;
-    this.players[0].position.y = this._canvas.height / 2;
-    this.players[1].position.y = this._canvas.height / 2;
+    this.ball.resetPosition(this._canvas.width, this._canvas.height);
+    this.players[0].resetPosition(this._canvas.height)
+    this.players[1].resetPosition(this._canvas.height)
     this.isPointOver = false;
 
     if (this.players[0].score < 21 && this.players[1].score < 21) {
-      this.start();
+      this.ball.serve(this.serveSpeed);
     } 
-    
     else {
       this.gameFinished = true;
       this.restartGame(); 
     }
   }
 
-  start() {
-    this.ball.velocity.x = (Math.random() > .5 ? 1 : -1);
-    this.ball.velocity.y = (Math.random() > .5 ? 1 : -1);
-    this.ball.velocity.length = this.serveSpeed;
-  }
-
   restartGame() {
-    this.players[1].score === 21 ? this.players[1].game += 1 : this.players[0].game += 1;
+    this.players[1].score === 21 ? this.players[1].game++ : this.players[0].game++;
     this.players[0].score = 0;
     this.players[1].score = 0;
-    this.start();
+    this.ball.serve(this.serveSpeed);
   }
 
   updateReward() {
     if (this.isPointOver) {
-      this.ball.velocity.x < 0 ? this.aggregateReward += 1: this.aggregateReward += -1;
+      this.ball.velocity.x < 0 ? this.aggregateReward++: this.aggregateReward--;
     }
   }
 
-  update(deltatime) {
-    this.ball.position.x += this.ball.velocity.x * deltatime;
-    this.ball.position.y += this.ball.velocity.y * deltatime;
+  updateGame(deltatime) {
+    this.ball.updatePosition(deltatime);
 
-    if (this.ball.left < 0 || this.ball.right > this._canvas.width) {
+    if (this.ball.isOutOfPlay(this._canvas.width)) {
       this.ball.velocity.x < 0 ? this.players[1].score++ : this.players[0].score++;
       this.isPointOver = true;
     }
 
     this.updateScore()
-    this.collideSides()
-    this.players.forEach(player => this.collide(player, this.ball));
+    this.ball.collideSides(this._canvas.height)
+    this.players.forEach(player => this.ball.collidePaddle(player, this._canvas.width));
   }
 
   updateScore() {
@@ -298,58 +358,33 @@ class Pong {
     $("#player1-game-tally").text(pong.players[0].game)
     $("#player2-game-tally").text(pong.players[1].game)
   }
-
-  collideSides() {
-    if (this.ball.top < 0) {
-      this.ball.velocity.y = -this.ball.velocity.y;
-      this.ball.position.y = this.ballHeight/2
-    }
-
-    if (this.ball.bottom > this._canvas.height) {
-      this.ball.velocity.y = -this.ball.velocity.y;
-      this.ball.position.y = this._canvas.height - this.ballHeight/2
-    }
-  }
-
-  botMove(player) {
-    this.repeatActionCountBot += 1;
-    if (player._moveUpBot) {
-      if (player.position.y - this.botSpeed >= 0) {
-        player.position.y -= this.botSpeed;
-      }
-    } 
-    else {
-      if (player.position.y + this.botSpeed <= this._canvas.height) {
-        player.position.y += this.botSpeed;
-      }
-    }
-  }
 }
 
 class Game {
 
-  constructor(pong) {
+  constructor(pong, botSocket) {
     this.pong = pong;
-    pong.handleWebSocketResponse();
-    pong.handleWebSocketClose();
-    pong.run();
+    this.botSocket = botSocket;
+  }
+
+  run() {
+    this.botSocket.handleWebSocketResponse();
+    this.botSocket.handleWebSocketClose();
+    this.pong.run(this.botSocket);
+    this.keyboard();
   }
 
   keyboard() {
-    window.addEventListener('keydown', keyboardHandlerFunction); 
+    var pong = this.pong
+    window.addEventListener('keydown', keyboardHandlerFunction);
     function keyboardHandlerFunction(e) {
-      var humanSpeed = 30;
-      if (e.keyCode === 40 && pong.players[0].position.y < (pong._canvas.height - humanSpeed) ) {
-        pong.players[0].position.y += humanSpeed;
-      } 
-      if (e.keyCode === 38 && pong.players[0].position.y > humanSpeed) {
-        pong.players[0].position.y -= humanSpeed;
+      if (e.keyCode === 38) {
+        pong.players[0].humanMove(pong._canvas.height, true);
       }
+      if (e.keyCode === 40) {
+        pong.players[0].humanMove(pong._canvas.height, false);
+      } 
     }
   }
 }
 
-const canvas = document.getElementById('pong');
-const pong = new Pong(canvas);
-const game = new Game(pong);
-game.keyboard();

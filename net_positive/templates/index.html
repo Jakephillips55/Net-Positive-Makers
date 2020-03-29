@@ -128,6 +128,13 @@
     </script>
   
     <script src={% static "aiGame.js" %}></script>
+    <script>
+      const canvas = document.getElementById('pong');
+      const pong = new Pong(canvas);
+      const botSocket = new BotSocket(pong, 'ws://' + window.location.host + '/ws/pong/training/');
+      const game = new Game(pong, botSocket);
+      game.run();
+    </script>
     <audio id ="music" controls autoplay>
       <source src={% static "public/wimbledon.mp3" %} type="audio/mpeg">
     </audio>

@@ -12,7 +12,7 @@
     #   - dist/**/*.js
     #
     src_files:
-        - ./pong/static/pong.js
+        - ./pong/static/aiGame.js
 
     # stylesheets
     #
@@ -53,7 +53,6 @@
     #
     spec_files:
       - "**/*[Ss]pec.js"
-      - ./pongSpec.js
 
     # src_dir
     #
