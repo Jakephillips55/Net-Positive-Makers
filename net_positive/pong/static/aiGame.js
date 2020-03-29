@@ -62,11 +62,14 @@ class Ball extends Rectangle {
     this.velocity.length = serveSpeed;
   }
 
-  collideSides(canvasHeight) {
+  collideTop() {
     if (this.top < 0) {
       this.velocity.y = -this.velocity.y;
       this.position.y = this.size.y/2
     }
+  }
+
+  collideBottom(canvasHeight) {
     if (this.bottom > canvasHeight) {
       this.velocity.y = -this.velocity.y;
       this.position.y = canvasHeight - this.size.y/2
@@ -74,17 +77,21 @@ class Ball extends Rectangle {
   }
 
   collideLeftPaddle(player) {
-    if (player.right >= this.left && player.top <= this.bottom && player.bottom >= this.top) {
+    if (this.isPaddleHit(player)) {
       this.position.x = player.paddleOffsetStart + player.size.x/2;
       this.paddleBounce();
     }
   }
 
   collideRightPaddle(player, canvasWidth) {
-    if (player.left <= this.right && player.top <= this.bottom && player.bottom >= this.top) {
+    if (this.isPaddleHit(player)) {
       this.position.x = canvasWidth - player.paddleOffsetStart - player.size.x/2;
       this.paddleBounce();
     }
+  }
+
+  isPaddleHit(player) {
+    return player.left <= this.right && player.right >= this.left && player.top <= this.bottom && player.bottom >= this.top;
   }
 
   paddleBounce() {
@@ -125,13 +132,13 @@ class Player extends Rectangle {
 
   moveUp(moveSpeed) {
     if (this.isMoveInCourtTop(moveSpeed)) {
-      this.position.y -= this.botSpeed;
+      this.position.y -= moveSpeed;
     }
   }
 
   moveDown(moveSpeed, canvasHeight) {
     if (this.isMoveInCourtBottom(moveSpeed, canvasHeight)) {
-      this.position.y += this.botSpeed;
+      this.position.y += moveSpeed;
     }
   }
 
@@ -352,19 +359,20 @@ class Pong {
 
   updateGame(deltatime) {
     this.ball.updatePosition(deltatime);
+    this.ball.collideTop();
+    this.ball.collideBottom(this._canvas.height);
+    this.ball.collideLeftPaddle(this.players[0]);
+    this.ball.collideRightPaddle(this.players[1], this._canvas.width);
+    this.updateScore();
+    
+  }
 
+  updateScore() {
     if (this.ball.isOutOfPlay(this._canvas.width)) {
       this.ball.velocity.x < 0 ? this.players[1].score++ : this.players[0].score++;
       this.isPointOver = true;
     }
 
-    this.updateScore();
-    this.ball.collideSides(this._canvas.height);
-    this.ball.collideLeftPaddle(this.players[0]);
-    this.ball.collideRightPaddle(this.players[1], this._canvas.width);
-  }
-
-  updateScore() {
     $("#player1tally").text(pong.players[0].score)
     $("#player2tally").text(pong.players[1].score)
     $("#player1-game-tally").text(pong.players[0].game)
