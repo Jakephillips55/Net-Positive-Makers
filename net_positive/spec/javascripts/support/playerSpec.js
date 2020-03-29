@@ -8,12 +8,40 @@ describe('Player', function() {
 
   beforeEach(function() {
     player = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
+    spyOn(player, "moveUp");
+    spyOn(player, "moveDown");
   })
 
   describe("initialize", function() {
     it("renders in the correct size", function() {
       expect(player.size.x).toEqual(8);
       expect(player.size.y).toEqual(32);
+    })
+  })
+
+  describe("botMove", function() {
+    it("invokes moveUp when _moveUpBot is true", function() {
+      player._moveUpBot = true;
+      player.botMove(320);
+      expect(player.moveUp).toHaveBeenCalledWith(12);
+    })
+    
+    it("invokes moveDown when _moveUpBot is false", function() {
+      player._moveUpBot = false;
+      player.botMove(320);
+      expect(player.moveDown).toHaveBeenCalledWith(12, 320);
+    })
+  })
+
+  describe("humanMove", function() {
+    it("invokes moveUp when moveUpHuman is true", function() {
+      player.humanMove(320, true);
+      expect(player.moveUp).toHaveBeenCalledWith(30);
+    })
+
+    it("invokes moveDown when moveUpHuman is false", function() {
+      player.humanMove(320, false);
+      expect(player.moveDown).toHaveBeenCalledWith(30, 320)
     })
   })
 

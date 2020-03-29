@@ -127,7 +127,7 @@ class Player extends Rectangle {
   }
 
   humanMove(canvasHeight, moveUpHuman) {
-    moveUpHuman? this.moveUp(this.humanSpeed) : this.moveDown(this.humanSpeed, canvasHeight)
+    moveUpHuman ? this.moveUp(this.humanSpeed) : this.moveDown(this.humanSpeed, canvasHeight);
   }
 
   moveUp(moveSpeed) {
