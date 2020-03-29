@@ -22,6 +22,7 @@ describe('Player', function() {
       player.position.y = 12;
       expect(player.isMoveInCourtTop(12)).toEqual(true);
     })
+
     it("returns false if the player is less than a move away from the top of the court", function() {
       player.position.y = 11;
       expect(player.isMoveInCourtTop(12)).toEqual(false);
@@ -33,6 +34,7 @@ describe('Player', function() {
       player.position.y = 308;
       expect(player.isMoveInCourtBottom(12, 320)).toEqual(true);
     })
+    
     it("returns false if the player is less than a move away from the bottom of the court", function() {
       player.position.y = 309;
       expect(player.isMoveInCourtBottom(12, 320)).toEqual(false);

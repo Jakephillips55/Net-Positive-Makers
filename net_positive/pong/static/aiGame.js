@@ -168,6 +168,47 @@ class BotSocket extends WebSocket {
   }
 }
 
+class ImageProcessor {
+  retrievePixelData(context) {
+    var image = context.getImageData(0, 0, 320, 320);
+    var imageArray = Array.from(image.data);
+    imageArray = this.rgbaToBinary(imageArray);
+    var imageString = imageArray.join('');
+    imageString = this.compressString(imageString);
+    return imageString;
+  }
+
+  compressString(imageString) {
+    //first round of compression
+    var regex80 = /00000000000000000000000000000000000000000000000000000000000000000000000000000000/gi
+    var regex40 = /0000000000000000000000000000000000000000/gi
+    var regex20 = /00000000000000000000/gi
+    var regex10 = /0000000000/gi
+    var regex4 = /1111/gi
+    imageString = imageString.replace(regex80, 'w');
+    imageString = imageString.replace(regex40, 'x');
+    imageString = imageString.replace(regex20, 'y');
+    imageString = imageString.replace(regex10, 'z');
+    imageString = imageString.replace(regex4, 'a');
+    // second round of compression
+    var regexW = /wwwwwwwwwwwwwwwwwwww/gi
+    imageString = imageString.replace(regexW, 'v');
+    return imageString;
+  }
+
+  rgbaToBinary(imageArray) {
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 4})
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 3})
+    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 2})
+
+    for (var i = 0, len = imageArray.length; i < len; i++) {
+      imageArray[i] < 127 ? imageArray[i] = 0 : imageArray[i] = 1;
+    }
+    return imageArray;
+  }
+
+}
+
 class Pong {
   constructor(canvas) {
     this.ballHeight = 8;
@@ -184,6 +225,7 @@ class Pong {
     this.trainingOpponent = 'nodevak-djokovic';
     this.isPointOver = false;
     this.aggregateReward = 0;
+    this.imageProcessor = new ImageProcessor
     this.ball = new Ball(this.ballWidth, this.ballHeight);
     this.players = [new Player(this.paddleWidth, this.paddleHeight, this.paddleOffsetStart),
                     new Player(this.paddleWidth, this.paddleHeight, this.paddleOffsetStart)];
@@ -232,7 +274,7 @@ class Pong {
     this.players[1].responseReceived = false;
     botSocket.send(JSON.stringify({
       "court": this.retrieveGameData(this.players[1]),
-      "image": this.retrievePixelData(),
+      "image": this.imageProcessor.retrievePixelData(this._context),
       "done": this.gameFinished,
       "bot": this.bot,
       "trainingopponent": "false"
@@ -258,44 +300,6 @@ class Pong {
     var reward = this.aggregateReward;
     var court = `{"bally": ${bally}, "paddley": ${paddley}, "reward": ${reward}}`;
     return court;
-  }
-
-  retrievePixelData() {
-    var image = this._context.getImageData(0, 0, 320, 320);
-    var imageArray = Array.from(image.data);
-    imageArray = this.rgbaToBinary(imageArray);
-    var imageString = imageArray.join('');
-    imageString = this.compressString(imageString);
-    return imageString;
-  }
-
-  compressString(imageString) {
-    //first round of compression
-    var regex80 = /00000000000000000000000000000000000000000000000000000000000000000000000000000000/gi
-    var regex40 = /0000000000000000000000000000000000000000/gi
-    var regex20 = /00000000000000000000/gi
-    var regex10 = /0000000000/gi
-    var regex4 = /1111/gi
-    imageString = imageString.replace(regex80, 'w');
-    imageString = imageString.replace(regex40, 'x');
-    imageString = imageString.replace(regex20, 'y');
-    imageString = imageString.replace(regex10, 'z');
-    imageString = imageString.replace(regex4, 'a');
-    // second round of compression
-    var regexW = /wwwwwwwwwwwwwwwwwwww/gi
-    imageString = imageString.replace(regexW, 'v');
-    return imageString;
-  }
-
-  rgbaToBinary(imageArray) {
-    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 4})
-    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 3})
-    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 2})
-
-    for (var i = 0, len = imageArray.length; i < len; i++) {
-      imageArray[i] < 127 ? imageArray[i] = 0 : imageArray[i] = 1;
-    }
-    return imageArray;
   }
 
   draw() {

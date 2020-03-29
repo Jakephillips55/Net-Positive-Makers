@@ -22,10 +22,12 @@ describe('Ball', function() {
       ball.position.x = 1;
       expect(ball.isOutOfPlay(320)).toEqual(true);
     })
+
     it("returns true if ball is past right side of court", function() {
       ball.position.x = 319;
       expect(ball.isOutOfPlay(320)).toEqual(true);
     })
+    
     it("returns false if ball is in the court", function() {
       ball.position.x = 2;
       expect(ball.isOutOfPlay(320)).toEqual(false);
