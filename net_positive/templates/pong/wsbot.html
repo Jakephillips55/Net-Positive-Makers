@@ -46,11 +46,12 @@
     <script src={% static "botSocket.js" %}></script>
     <script src={% static "pong.js" %}></script>
     <script src={% static "game.js" %}></script>
-    <script src={% static "startGame.js" %}></script>
+    <script src={% static "initializeObjects.js" %}></script>
     <script>
       $(document).ready(function(){
-        pong.bot = 'student'
-        pong.training = true
+        pong.bot = 'student';
+        pong.training = true;
+        game.run();
       })
     </script>
   </body>

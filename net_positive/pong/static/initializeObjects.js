@@ -13,4 +13,3 @@ const player2 = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
 const pong = new Pong(canvas, imageProcessor, ball, player1, player2);
 const botSocket = new BotSocket('ws://' + window.location.host + '/ws/pong/training/', player1, player2);
 const game = new Game(pong, botSocket);
-game.run();
