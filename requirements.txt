@@ -4,5 +4,6 @@ django-jasmine
 gym[atari]
 channels
 numpy
+pytest
 pickle-mixin
 opencv-python
