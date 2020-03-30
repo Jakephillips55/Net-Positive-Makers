@@ -78,62 +78,71 @@
 
       </div>
     </section>
-
+    <script src={% static "vector.js" %}></script>
+    <script src={% static "rectangle.js" %}></script>
+    <script src={% static "ball.js" %}></script>
+    <script src={% static "player.js" %}></script>
+    <script src={% static "imageProcessor.js" %}></script>
+    <script src={% static "botSocket.js" %}></script>
+    <script src={% static "pong.js" %}></script>
+    <script src={% static "keyboardInput.js" %}></script>
+    <script src={% static "setupAIGame.js" %}></script>
     <script>
       $(document).ready(function(){
-        pong.training = false
-        
-          $('#rl-federer').on('click', function(){
-            pong.bot = 'rl-federer';
-            pong.players[0].score = 0
-            pong.players[0].game = 0
-            pong.players[1].score = 0
-            pong.players[1].game = 0
-          })
-
-          $('#steffi-graph').on('click', function(){
-            pong.bot = 'steffi-graph';
-            pong.players[0].score = 0
-            pong.players[0].game = 0
-            pong.players[1].score = 0
-            pong.players[1].game = 0
-          })
-
-          $('#nodevak-djokovic').on('click', function(){
-            pong.bot = 'nodevak-djokovic';
-            pong.players[0].score = 0
-            pong.players[0].game = 0
-            pong.players[1].score = 0
-            pong.players[1].game = 0
-          })
-
-          $('#bjorn-cyborg').on('click', function(){
-            pong.bot = 'bjorn-cyborg';
-            pong.players[0].score = 0
-            pong.players[0].game = 0
-            pong.players[1].score = 0
-            pong.players[1].game = 0
-          })
-
-          $('#andrai-agassi').on('click', function(){
-            pong.bot = 'andrai-agassi';
-            pong.players[0].score = 0
-            pong.players[0].game = 0
-            pong.players[1].score = 0
-            pong.players[1].game = 0
-          })
+        $('#rl-federer').on('click', function(){
+          pong.bot = 'rl-federer';
+          pong.players[0].score = 0
+          pong.players[0].game = 0
+          pong.players[1].score = 0
+          pong.players[1].game = 0
+          pong.updatePage();
         })
 
+        $('#steffi-graph').on('click', function(){
+          pong.bot = 'steffi-graph';
+          pong.players[0].score = 0
+          pong.players[0].game = 0
+          pong.players[1].score = 0
+          pong.players[1].game = 0
+          pong.updatePage();
+        })
+
+        $('#nodevak-djokovic').on('click', function(){
+          pong.bot = 'nodevak-djokovic';
+          pong.players[0].score = 0
+          pong.players[0].game = 0
+          pong.players[1].score = 0
+          pong.players[1].game = 0
+          pong.updatePage();
+        })
+
+        $('#bjorn-cyborg').on('click', function(){
+          pong.bot = 'bjorn-cyborg';
+          pong.players[0].score = 0
+          pong.players[0].game = 0
+          pong.players[1].score = 0
+          pong.players[1].game = 0
+          pong.updatePage();
+        })
+
+        $('#andrai-agassi').on('click', function(){
+          pong.bot = 'andrai-agassi';
+          pong.players[0].score = 0
+          pong.players[0].game = 0
+          pong.players[1].score = 0
+          pong.players[1].game = 0
+          pong.updatePage();
+        })
+
+        pong.training = false;
+        pong.multiplayer = false;
+        botSocket.handleWebSocketResponse();
+        botSocket.handleWebSocketClose();
+        pong.run(botSocket);
+        keyboardInput.arcadeMode();
+      })
+
        
-    </script>
-  
-    <script src={% static "aiGame.js" %}></script>
-    <script>
-      const canvas = document.getElementById('pong');
-      const pong = new Pong(canvas);
-      const botSocket = new BotSocket(pong, 'ws://' + window.location.host + '/ws/pong/training/');
-      const game = new Game(pong, botSocket);
-      game.run();
     </script>
     <audio id ="music" controls autoplay>
       <source src={% static "public/wimbledon.mp3" %} type="audio/mpeg">

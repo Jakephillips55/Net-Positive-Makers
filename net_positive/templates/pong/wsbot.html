@@ -38,23 +38,25 @@
         <canvas id='pong' width='320' height='320'></canvas>
     </div>
     </center>
-
-
-        <script src={% static 'aiGame.js' %}></script>
-        <script>
-          $(document).ready(function(){
-            pong.bot = 'student'
-            pong.training = true
-          })
-        </script>
-        <script>
-          const canvas = document.getElementById('pong');
-          const pong = new Pong(canvas);
-          const botSocket = new BotSocket(pong, 'ws://' + window.location.host + '/ws/pong/training/');
-          const game = new Game(pong, botSocket);
-          game.run();
-        </script>
-
+    <script src={% static "vector.js" %}></script>
+    <script src={% static "rectangle.js" %}></script>
+    <script src={% static "ball.js" %}></script>
+    <script src={% static "player.js" %}></script>
+    <script src={% static "imageProcessor.js" %}></script>
+    <script src={% static "botSocket.js" %}></script>
+    <script src={% static "pong.js" %}></script>
+    <script src={% static "keyboardInput.js" %}></script>
+    <script src={% static "setupAIGame.js" %}></script>
+    <script>
+      $(document).ready(function(){
+        pong.bot = 'student';
+        pong.training = true;
+        pong.multiplayer = false;
+        botSocket.handleWebSocketResponse();
+        botSocket.handleWebSocketClose();
+        pong.run(botSocket);
+      })
+    </script>
   </body>
  
 

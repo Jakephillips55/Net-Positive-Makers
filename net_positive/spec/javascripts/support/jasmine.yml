@@ -12,7 +12,14 @@
     #   - dist/**/*.js
     #
     src_files:
-        - ./pong/static/aiGame.js
+        - ./pong/static/vector.js
+        - ./pong/static/rectangle.js
+        - ./pong/static/ball.js
+        - ./pong/static/player.js
+        - ./pong/static/imageProcessor.js
+        - ./pong/static/botSocket.js
+        - ./pong/static/pong.js
+        - ./pong/static/game.js
 
     # stylesheets
     #
