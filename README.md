@@ -61,7 +61,7 @@ cd Net-Positive-Makers
 And run:
 
 ```
-python3 net_positive/manage.py test pong
+PYTHONPATH=net_positive/ pytest --ds=net_positive.settings
 ```
 
 
