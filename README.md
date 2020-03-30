@@ -23,7 +23,7 @@ install pip3
 
 ## How to run the app locally
 
-From the terminal navigate to the directory:
+From the terminal navigate to the root of the directory:
 
 ```
 cd Net-Positive-Makers
@@ -53,19 +53,19 @@ We also added the capability for the neural networks to be trained directly on o
 
 ## Testing
 
-To test all python directories, from the command line run:
+For Python tests, navigate to the root of the directory:
 
 ```
- do python3 -m pytest 
+cd Net-Positive-Makers
 ```
- 
-For individual tests run from the command line:
+And run:
 
 ```
-py.test --spec
+python3 net_positive/manage.py test pong
 ```
 
-For Javascript tests, navigate to the net_positive directory containing the spec directory. After runing the following command tests will be visible at localhost:8888
+
+For JavaScript tests, navigate to the net_positive directory containing the spec directory. After runing the following command tests will be visible at localhost:8888
 
 ```
 jasmine server
