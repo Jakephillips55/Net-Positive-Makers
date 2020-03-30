@@ -1,17 +1,14 @@
 from django.test import TestCase
 from django.http import JsonResponse
 from django.views.generic import TemplateView
-from pong.models import perfectBot
-from pong.models import nonPerfectBot
-from pong.models import faultyBot
+from pong.models import PerfectBot
+from pong.models import NonPerfectBot
+from pong.models import FaultyBot
 
 class perfectBotTestCase(TestCase):
-    def moves_up(self):
+    def test_moves_up_correctly(self):
         """perfect bot moves up when below the ball"""
-        self.assertEqual(PerfectBot.perfect_bot_ws(), 'The lion says "roar"')
-        self.assertEqual(cat.speak(), 'The cat says "meow"')
-
-
+        self.assertEqual(PerfectBot.perfect_bot_ws('10', '30'), true)
 
 if __name__ == "__main__":
       HomeView()

@@ -3,7 +3,7 @@ import numpy as np
 
 class NonPerfectBot(models.Model):
     @classmethod
-    def non_perfect_bot_ws(request, bally, paddley):
+    def get_move(request, bally, paddley):
         sample = np.random.uniform()
         if int(bally) <= int(paddley):
             if sample >= 0.1:
