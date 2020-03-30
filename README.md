@@ -70,7 +70,7 @@ For Javascript tests, run from the command line:
 ```
 jasmine server
 ```
-
+Then navigate to localhost:8888 in your browser
 
 ## Arcade Mode
 
