@@ -4,6 +4,7 @@ django-jasmine
 gym[atari]
 channels
 numpy
+hypothesis==4.38.0
 pytest-django
 pickle-mixin
 opencv-python
