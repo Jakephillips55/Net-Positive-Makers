@@ -1,5 +1,5 @@
 language: python
-dist: trust
+dist: xenial
 python:
 - '3.6'
 cache: pip3
