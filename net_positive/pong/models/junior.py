@@ -1,10 +1,7 @@
 from django.db import models
-import json
-from datetime import datetime
 import numpy as np
 import pickle
 import csv
-from pathlib import Path
 import cv2
 
 class Junior(models.Model):

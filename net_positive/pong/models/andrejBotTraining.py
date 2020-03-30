@@ -1,5 +1,4 @@
 from django.db import models
-import json
 from datetime import datetime
 import numpy as np
 import pickle
@@ -8,7 +7,6 @@ from pathlib import Path
 import cv2
 
 class AndrejBotTraining(models.Model):
-
   # hyperparameters
     H = 200 # number of hidden layer neurons
     batch_size = 10 # every how many episodes to do a param update?
