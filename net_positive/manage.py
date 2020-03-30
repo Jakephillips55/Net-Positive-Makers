@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
+
+if '/app' in os.environ['HOME']:
+    import django_heroku
+    django_heroku.settings(locals())
+
 import sys
 
 def main():
