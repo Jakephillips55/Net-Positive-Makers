@@ -5,4 +5,3 @@ from .faultyBot import FaultyBot
 from .junior import Junior
 from .nonPerfectBot import NonPerfectBot
 from .perfectBot import PerfectBot
-

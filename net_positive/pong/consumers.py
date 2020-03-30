@@ -21,33 +21,33 @@ class PongConsumer(WebsocketConsumer):
         trainingopponent = json.loads(text_data)["trainingopponent"]
         
         if trainingopponent == "true":
-          self.trainingOpponent(court_json)
+            self.trainingOpponent(court_json)
         else:
-          if bot == "student":
-            self.student(text_data)
+            if bot == "student":
+                self.student(text_data)
 
-          if bot == "steffi-graph":
-            self.steffiGraph(court_json)
-          
-          if bot == "nodevak-djokovic":
-            self.nodevakDjokovic(court_json)
+            if bot == "steffi-graph":
+                self.steffiGraph(court_json)
+            
+            if bot == "nodevak-djokovic":
+                self.nodevakDjokovic(court_json)
 
-          if bot == "rl-federer":
-            self.rlFederer(text_data)
-          
-          if bot == "andrai-agassi":
-            self.andraiAgassi(court_json)
+            if bot == "rl-federer":
+                self.rlFederer(text_data)
+            
+            if bot == "andrai-agassi":
+                self.andraiAgassi(court_json)
 
-          if bot == "bjorn-cyborg":
-            self.bjornCyborg(text_data)
-      
+            if bot == "bjorn-cyborg":
+                self.bjornCyborg(text_data)
+        
     def trainingOpponent(self, court_json):
         bally = json.loads(court_json)["bally"]
         paddley = json.loads(court_json)["paddley"]
         move_up = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
-          'moveup': move_up,
-          'playerID': 0
+            'moveup': move_up,
+            'playerID': 0
         }))
 
     def student(self, text_data):
@@ -58,8 +58,8 @@ class PongConsumer(WebsocketConsumer):
         image = list(image)
         move_up = AndrejBotTraining.andrej_training(image, reward, done)
         self.send(text_data=json.dumps({
-          'moveup': move_up,
-          'playerID': 1
+            'moveup': move_up,
+            'playerID': 1
         }))
 
     def steffiGraph(self, court_json):
@@ -67,8 +67,8 @@ class PongConsumer(WebsocketConsumer):
         paddley = json.loads(court_json)["paddley"]
         move_up = PerfectBot.perfect_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
-          'moveup': move_up,
-          'playerID': 1
+            'moveup': move_up,
+            'playerID': 1
         }))
 
     def nodevakDjokovic(self, court_json):
@@ -76,8 +76,8 @@ class PongConsumer(WebsocketConsumer):
         paddley = json.loads(court_json)["paddley"]
         move_up = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
-          'moveup': move_up,
-          'playerID': 1
+            'moveup': move_up,
+            'playerID': 1
         }))
 
     def rlFederer(self, text_data):
@@ -86,8 +86,8 @@ class PongConsumer(WebsocketConsumer):
         image = list(image)
         move_up = AndrejBot.andrej_bot(image)
         self.send(text_data=json.dumps({
-          'moveup': move_up,
-          'playerID': 1 
+            'moveup': move_up,
+            'playerID': 1 
         }))
 
     def andraiAgassi(self, court_json):
@@ -95,8 +95,8 @@ class PongConsumer(WebsocketConsumer):
         paddley = json.loads(court_json)["paddley"]
         move_up = FaultyBot.faulty_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
-          'moveup': move_up,
-          'playerID': 1 
+            'moveup': move_up,
+            'playerID': 1 
         }))
 
     def bjornCyborg(self, text_data):
@@ -105,8 +105,8 @@ class PongConsumer(WebsocketConsumer):
         image = list(image)
         move_up = Junior.junior_bot(image)
         self.send(text_data=json.dumps({
-          'moveup': move_up,
-          'playerID': 1 
+            'moveup': move_up,
+            'playerID': 1 
         }))
 
     def reverseStringCompression (self, image):
