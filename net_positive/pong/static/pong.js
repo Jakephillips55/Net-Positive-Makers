@@ -8,7 +8,6 @@ class Pong {
     this.training = false;
     this.multiplayer = false;
     this.bot = 'rl-federer';
-    this.trainingOpponent = 'nodevak-djokovic';
     this.isPointOver = false;
     this.aggregateReward = 0;
     this.imageProcessor = imageProcessor;
@@ -78,7 +77,7 @@ class Pong {
       "court": this.retrieveGameData(this.players[0]),
       "image": "dummy",
       "done": "dummy",
-      "bot": this.trainingOpponent,
+      "bot": "nodevak-djokovic",
       "trainingopponent": "true"
     }));
   }
