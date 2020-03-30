@@ -6,6 +6,7 @@ cache: pip3
 install:
 - pip3 install -r requirements.txt
 script:
+- python3 net_positive/manage.py test pong
 deploy:
   provider: heroku
   app: net-positive
