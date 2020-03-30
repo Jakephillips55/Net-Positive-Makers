@@ -12,5 +12,5 @@ const paddleOffsetStart = 36;
 const player1 = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
 const player2 = new Player(paddleWidth, paddleHeight, paddleOffsetStart);
 const pong = new Pong(canvas, imageProcessor, ball, player1, player2);
-const botSocket = new BotSocket('ws://' + window.location.host + '/ws/pong/training/', player1, player2);
+const botSocket = new BotSocket('ws://' + window.location.host + '/ws/pong/', player1, player2);
 const keyboardInput = new KeyboardInput(pong);

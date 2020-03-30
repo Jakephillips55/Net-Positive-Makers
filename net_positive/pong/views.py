@@ -9,8 +9,6 @@ def arcade(request, template='arcade.html'):
 def multiplayer(request, template='multiplayer.html'):
   return render(request, template, {})
 
-def training(request, training_session):
-  return render(request, 'training.html', {
-    'training_session': training_session,
-  })
+def training(request, template='training.html'):
+  return render(request, template, {})
 
