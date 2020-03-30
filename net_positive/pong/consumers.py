@@ -74,7 +74,7 @@ class PongConsumer(WebsocketConsumer):
     def nodevak_djokovic(self, court_json):
         ball_y = json.loads(court_json)["bally"]
         paddle_y = json.loads(court_json)["paddley"]
-        move_up = NonPerfectBot.get_move(bally_y, paddle_y)
+        move_up = NonPerfectBot.get_move(ball_y, paddle_y)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 1
