@@ -61,7 +61,7 @@ class Pong {
   getBotMove(botSocket) {
     this.players[1].responseReceived = false;
     botSocket.send(JSON.stringify({
-      "court": this.retrieveGameData(this.players[1]),
+      "court": this.retrieveCourtData(this.players[1]),
       "image": this.imageProcessor.retrievePixelData(this._context),
       "done": this.gameFinished,
       "reward": this.aggregateReward,

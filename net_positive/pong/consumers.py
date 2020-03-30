@@ -24,7 +24,7 @@ class PongConsumer(WebsocketConsumer):
           self.trainingOpponent(court_json)
         else:
           if bot == "student":
-            self.student(court_json, text_data)
+            self.student(text_data)
 
           if bot == "steffi-graph":
             self.steffiGraph(court_json)
