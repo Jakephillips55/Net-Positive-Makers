@@ -1,22 +1,17 @@
 from django.test import TestCase
-from pong.models import SimpleBot
 from django.http import JsonResponse
-# Create your tests here.
 from django.views.generic import TemplateView
+from pong.models import perfectBot
+from pong.models import nonPerfectBot
+from pong.models import faultyBot
 
-# class Test_simple_bot():
-#     def simple_bot_test(request, court):
-#         """test that bally and paddley are 
-#         printing the correct responses"""
-#         if int(court["bally"]) <= int(court["paddley"]):
-#           print(True)
-#           return True
-#         else:
-#           print(False)
-#           return False
-#     print('Build')
+class perfectBotTestCase(TestCase):
+    def moves_up(self):
+        """perfect bot moves up when below the ball"""
+        self.assertEqual(PerfectBot.perfect_bot_ws(), 'The lion says "roar"')
+        self.assertEqual(cat.speak(), 'The cat says "meow"')
 
-#     assert('True is not True')
+
 
 if __name__ == "__main__":
       HomeView()
