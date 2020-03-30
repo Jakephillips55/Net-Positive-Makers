@@ -64,6 +64,7 @@ class Pong {
       "court": this.retrieveGameData(this.players[1]),
       "image": this.imageProcessor.retrievePixelData(this._context),
       "done": this.gameFinished,
+      "reward": this.aggregateReward,
       "bot": this.bot,
       "trainingopponent": "false"
     }));
@@ -74,19 +75,19 @@ class Pong {
   getTrainingOpponentMove(botSocket) {
     this.players[0].responseReceived = false;
     botSocket.send(JSON.stringify({
-      "court": this.retrieveGameData(this.players[0]),
+      "court": this.retrieveCourtData(this.players[0]),
       "image": "dummy",
       "done": "dummy",
+      "reward": "dummy",
       "bot": "nodevak-djokovic",
       "trainingopponent": "true"
     }));
   }
 
-  retrieveGameData(player) {
+  retrieveCourtData(player) {
     var bally = Math.round(this.ball.position.y);
     var paddley = player.position.y;
-    var reward = this.aggregateReward;
-    var court = `{"bally": ${bally}, "paddley": ${paddley}, "reward": ${reward}}`;
+    var court = `{"bally": ${bally}, "paddley": ${paddley}}`;
     return court;
   }
 

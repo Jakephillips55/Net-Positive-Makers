@@ -50,9 +50,9 @@ class PongConsumer(WebsocketConsumer):
           'playerID': 0
         }))
 
-    def student(self, court_json, text_data):
+    def student(self, text_data):
         done = json.loads(text_data)["done"]
-        reward = json.loads(court_json)["reward"]
+        reward = json.loads(text_data)["reward"]
         image = json.loads(text_data)["image"]
         image = self.reverseStringCompression(image)
         image = list(image)
