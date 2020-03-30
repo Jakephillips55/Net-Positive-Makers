@@ -8,7 +8,7 @@ class AndrejBot(models.Model):
     model = pickle.load(open('net_positive/pong/training/andrej_gold.p', 'rb'))
 
     @classmethod
-    def get_move(self, pixels):
+    def andrej_bot(self, pixels):
         D = 80 * 80
         # preprocess the observation, set input to network to be difference image
         cur_x = AndrejBot.prepro(pixels)

@@ -50,7 +50,7 @@ class AndrejBotTraining(models.Model):
     reward_sum = 0
       
     @classmethod
-    def get_move(self, pixels, reward, done):
+    def andrej_training(self, pixels, reward, done):
         if self.my_file.is_file():
             self.resume = True 
 
