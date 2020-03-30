@@ -6,7 +6,7 @@ cache: pip3
 install:
 - pip3 install -r requirements.txt
 script:
-- jasmine ci
+- jasmine-ci
 - PYTHONPATH=net_positive/ pytest --ds=net_positive.settings
 deploy:
   provider: heroku
