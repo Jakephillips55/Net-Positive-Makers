@@ -8,14 +8,6 @@ class Ball extends Rectangle {
     this.reboundSpeed = 1.05;
   }
 
-  updateServeSpeed(serveSpeed) {
-    this.serveSpeed = serveSpeed;
-  }
-
-  updateReboundSpeed(reboundSpeed) {
-    this.reboundSpeed = reboundSpeed;
-  }
-
   resetPosition(canvasWidth, canvasHeight) {
     this.position.x = canvasWidth / 2;
     this.position.y = canvasHeight / 2;
