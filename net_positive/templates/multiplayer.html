@@ -77,22 +77,22 @@
         <script>
           $(document).ready(function(){
             $('#easy').on('click', function(){
-              ball.updateServeSpeed(300);
-              ball.updateReboundSpeed(1.00);
+              ball.serveSpeed = 300;
+              ball.reboundSpeed = 1.00;
               pong.players[0].score = 0;
               pong.players[1].score = 0;
             })
   
             $('#medium').on('click', function(){
-              ball.updateServeSpeed(400);
-              ball.updateReboundSpeed(1.10);
+              ball.serveSpeed = 400;
+              ball.reboundSpeed = 1.10;
               pong.players[0].score = 0;
               pong.players[1].score = 0;
             })
   
             $('#hard').on('click', function(){
-              ball.updateServeSpeed(500);
-              ball.updateReboundSpeed(1.20);
+              ball.serveSpeed = 500;
+              ball.reboundSpeed = 1.20;
               pong.players[0].score = 0;
               pong.players[1].score = 0;
             })
