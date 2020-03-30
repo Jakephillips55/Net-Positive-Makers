@@ -65,12 +65,11 @@ For individual tests run from the command line:
 py.test --spec
 ```
 
-For Javascript tests, run from the command line:
+For Javascript tests, navigate to the net_positive directory containing the spec directory. After runing the following command tests will be visible at localhost:8888
 
 ```
 jasmine server
 ```
-Then navigate to localhost:8888 in your browser
 
 ## Arcade Mode
 
