@@ -5,6 +5,7 @@ gym[atari]
 channels
 numpy
 hypothesis==4.38.0
+attrs>=19.2
 pytest-django
 pickle-mixin
 opencv-python
