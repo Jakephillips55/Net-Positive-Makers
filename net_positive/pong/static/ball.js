@@ -1,9 +1,11 @@
 "use strict";
 
 class Ball extends Rectangle {
-  constructor(w, h) {
+  constructor(w, h, serveSpeed) {
     super(w, h);
     this.velocity = new Vector;
+    this.serveSpeed = serveSpeed;
+    this.reboundSpeed = 1.05;
   }
 
   resetPosition(canvasWidth, canvasHeight) {
@@ -22,10 +24,10 @@ class Ball extends Rectangle {
     return this.left < 0 || this.right > canvasWidth;
   }
 
-  serve(serveSpeed) {
+  serve() {
     this.velocity.x = (Math.random() > .5 ? 1 : -1);
     this.velocity.y = (Math.random() > .5 ? 1 : -1);
-    this.velocity.length = serveSpeed;
+    this.velocity.length = this.serveSpeed;
   }
 
   collideTop() {
@@ -63,6 +65,6 @@ class Ball extends Rectangle {
   paddleBounce() {
     this.velocity.x = -this.velocity.x;
     this.velocity.y += this.velocity.y * (Math.random() - 0.5);
-    this.velocity.length *= 1.05; 
+    this.velocity.length *= this.reboundSpeed; 
   }
 }

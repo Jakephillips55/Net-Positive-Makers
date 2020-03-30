@@ -85,12 +85,10 @@
     <script src={% static "imageProcessor.js" %}></script>
     <script src={% static "botSocket.js" %}></script>
     <script src={% static "pong.js" %}></script>
-    <script src={% static "game.js" %}></script>
-    <script src={% static "initializeObjects.js" %}></script>
+    <script src={% static "keyboardInput.js" %}></script>
+    <script src={% static "setupAIGame.js" %}></script>
     <script>
       $(document).ready(function(){
-        pong.training = false
-        
         $('#rl-federer').on('click', function(){
           pong.bot = 'rl-federer';
           pong.players[0].score = 0
@@ -131,7 +129,12 @@
           pong.players[1].game = 0
         })
 
-        game.run();
+        pong.training = false;
+        pong.multiplayer = false;
+        botSocket.handleWebSocketResponse();
+        botSocket.handleWebSocketClose();
+        pong.run(botSocket);
+        keyboardInput.arcadeMode();
       })
 
        

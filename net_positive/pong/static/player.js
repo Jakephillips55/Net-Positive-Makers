@@ -6,7 +6,7 @@ class Player extends Rectangle {
     this.score = 0;
     this.game = 0;
     this.botSpeed = 12;
-    this.humanSpeed = 30;
+    this.humanSpeed = 40;
     this.velocity = new Vector;
     this.repeatActionCount = 0;
     this._moveUpBot = '';

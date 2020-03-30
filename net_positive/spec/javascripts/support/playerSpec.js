@@ -36,12 +36,12 @@ describe('Player', function() {
   describe("humanMove", function() {
     it("invokes moveUp when moveUpHuman is true", function() {
       player.humanMove(320, true);
-      expect(player.moveUp).toHaveBeenCalledWith(30);
+      expect(player.moveUp).toHaveBeenCalledWith(40);
     })
 
     it("invokes moveDown when moveUpHuman is false", function() {
       player.humanMove(320, false);
-      expect(player.moveDown).toHaveBeenCalledWith(30, 320)
+      expect(player.moveDown).toHaveBeenCalledWith(40, 320)
     })
   })
 

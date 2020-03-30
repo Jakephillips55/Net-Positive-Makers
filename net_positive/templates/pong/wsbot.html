@@ -45,13 +45,16 @@
     <script src={% static "imageProcessor.js" %}></script>
     <script src={% static "botSocket.js" %}></script>
     <script src={% static "pong.js" %}></script>
-    <script src={% static "game.js" %}></script>
-    <script src={% static "initializeObjects.js" %}></script>
+    <script src={% static "keyboardInput.js" %}></script>
+    <script src={% static "setupAIGame.js" %}></script>
     <script>
       $(document).ready(function(){
         pong.bot = 'student';
         pong.training = true;
-        game.run();
+        pong.multiplayer = false;
+        botSocket.handleWebSocketResponse();
+        botSocket.handleWebSocketClose();
+        pong.run(botSocket);
       })
     </script>
   </body>

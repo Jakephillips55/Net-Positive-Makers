@@ -8,6 +8,7 @@ describe('Ball', function() {
   var player2;
   var ballWidth = 4;
   var ballHeight = 8;
+  var serveSpeed = 200;
   var ball;
   
 
@@ -22,7 +23,7 @@ describe('Ball', function() {
     spyOnProperty(player2, 'bottom', 'get').and.returnValue(176);
     spyOnProperty(player2, 'left', 'get').and.returnValue(280);
     spyOnProperty(player2, 'right', 'get').and.returnValue(288);
-    ball = new Ball(ballWidth, ballHeight);
+    ball = new Ball(ballWidth, ballHeight, serveSpeed);
   })
 
   describe("initialize", function() {

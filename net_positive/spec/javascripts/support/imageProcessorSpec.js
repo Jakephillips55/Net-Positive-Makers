@@ -2,6 +2,7 @@
 
 describe('ImageProcessor', function() {
   var imageProcessor;
+  
   beforeEach(function() {
     imageProcessor = new ImageProcessor;
   })

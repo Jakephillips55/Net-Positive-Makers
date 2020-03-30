@@ -2,11 +2,11 @@
 
 class Pong {
   constructor(canvas, imageProcessor, ball, player1, player2) {
-    this.serveSpeed = 200;
     this._canvas = canvas;
     this._context = canvas.getContext('2d');
     this.gameFinished = false;
     this.training = false;
+    this.multiplayer = false;
     this.bot = 'rl-federer';
     this.trainingOpponent = 'nodevak-djokovic';
     this.isPointOver = false;
@@ -22,7 +22,7 @@ class Pong {
     let lastTime;
     const callback = (milliseconds) => {
       if (lastTime) {
-        this.updatePaddles();
+        if (!this.multiplayer) {this.updatePaddles();}
         this.updateGame((milliseconds - lastTime) / 1000);
         this.updateReward();
       }
@@ -30,7 +30,7 @@ class Pong {
       requestAnimationFrame(callback);
       if (this.isPointOver) {this.reset();}
       this.draw();
-      if (botSocket.readyState === 1) {this.getNextBotMoves();}   
+      if (!this.multiplayer && botSocket.readyState === 1) {this.getNextBotMoves();}   
     }
     callback();
   }
@@ -94,6 +94,7 @@ class Pong {
   draw() {
     this._context.fillStyle = '#000';
     this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+    if (this.multiplayer === true) {this.drawNet();}
     this.drawRectangle(this.ball);
     this.players.forEach(player => this.drawRectangle(player));
   }
@@ -103,6 +104,14 @@ class Pong {
     this._context.fillRect(rectangle.left, rectangle.top, rectangle.size.x, rectangle.size.y);
   }
 
+  drawNet() {
+    this._context.setLineDash([5, 5]);
+    this._context.moveTo(300,0);
+    this._context.lineTo(300,400);
+    this._context.strokeStyle = '#FF00FF';
+    this._context.stroke();
+  }
+
   reset() {
     this.ball.resetPosition(this._canvas.width, this._canvas.height);
     this.players[0].resetPosition(this._canvas.height)
@@ -110,7 +119,7 @@ class Pong {
     this.isPointOver = false;
 
     if (this.players[0].score < 21 && this.players[1].score < 21) {
-      this.ball.serve(this.serveSpeed);
+      if (!this.multiplayer) {this.ball.serve();}
     } 
     else {
       this.gameFinished = true;
@@ -122,7 +131,8 @@ class Pong {
     this.players[1].score === 21 ? this.players[1].game++ : this.players[0].game++;
     this.players[0].score = 0;
     this.players[1].score = 0;
-    this.ball.serve(this.serveSpeed);
+    this.updatePage();
+    if (!this.multiplayer) {this.ball.serve();}
   }
 
   updateReward() {
@@ -138,15 +148,17 @@ class Pong {
     this.ball.collideLeftPaddle(this.players[0]);
     this.ball.collideRightPaddle(this.players[1], this._canvas.width);
     this.updateScore();
-    
   }
 
   updateScore() {
     if (this.ball.isOutOfPlay(this._canvas.width)) {
       this.ball.velocity.x < 0 ? this.players[1].score++ : this.players[0].score++;
       this.isPointOver = true;
+      this.updatePage();
     }
+  }
 
+  updatePage() {
     $("#player1tally").text(pong.players[0].score)
     $("#player2tally").text(pong.players[1].score)
     $("#player1-game-tally").text(pong.players[0].game)
