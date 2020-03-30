@@ -18,33 +18,33 @@ class PongConsumer(WebsocketConsumer):
     def receive(self, text_data):
         court_json = json.loads(text_data)["court"]
         bot = json.loads(text_data)["bot"]
-        training_opponent = json.loads(text_data)["trainingopponent"]
+        trainingopponent = json.loads(text_data)["trainingopponent"]
         
-        if training_opponent == "true":
-            self.training_opponent(court_json)
+        if trainingopponent == "true":
+            self.trainingOpponent(court_json)
         else:
             if bot == "student":
                 self.student(text_data)
 
             if bot == "steffi-graph":
-                self.steffi_graph(court_json)
+                self.steffiGraph(court_json)
             
             if bot == "nodevak-djokovic":
-                self.nodevak_djokovic(court_json)
+                self.nodevakDjokovic(court_json)
 
             if bot == "rl-federer":
-                self.rl_federer(text_data)
+                self.rlFederer(text_data)
             
             if bot == "andrai-agassi":
-                self.andrai_agassi(court_json)
+                self.andraiAgassi(court_json)
 
             if bot == "bjorn-cyborg":
-                self.bjorn_cyborg(text_data)
+                self.bjornCyborg(text_data)
         
-    def training_opponent(self, court_json):
-        ball_y = json.loads(court_json)["bally"]
-        paddle_y = json.loads(court_json)["paddley"]
-        move_up = NonPerfectBot.get_move(ball_y, paddle_y)
+    def trainingOpponent(self, court_json):
+        bally = json.loads(court_json)["bally"]
+        paddley = json.loads(court_json)["paddley"]
+        move_up = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 0
@@ -54,62 +54,62 @@ class PongConsumer(WebsocketConsumer):
         done = json.loads(text_data)["done"]
         reward = json.loads(text_data)["reward"]
         image = json.loads(text_data)["image"]
-        image = self.reverse_string_compression(image)
+        image = self.reverseStringCompression(image)
         image = list(image)
-        move_up = AndrejBotTraining.get_move(image, reward, done)
+        move_up = AndrejBotTraining.andrej_training(image, reward, done)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 1
         }))
 
-    def steffi_graph(self, court_json):
-        ball_y = json.loads(court_json)["bally"]
-        paddle_y = json.loads(court_json)["paddley"]
-        move_up = PerfectBot.get_move(ball_y, paddle_y)
+    def steffiGraph(self, court_json):
+        bally = json.loads(court_json)["bally"]
+        paddley = json.loads(court_json)["paddley"]
+        move_up = PerfectBot.perfect_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 1
         }))
 
-    def nodevak_djokovic(self, court_json):
-        ball_y = json.loads(court_json)["bally"]
-        paddle_y = json.loads(court_json)["paddley"]
-        move_up = NonPerfectBot.get_move(ball_y, paddle_y)
+    def nodevakDjokovic(self, court_json):
+        bally = json.loads(court_json)["bally"]
+        paddley = json.loads(court_json)["paddley"]
+        move_up = NonPerfectBot.non_perfect_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 1
         }))
 
-    def rl_federer(self, text_data):
+    def rlFederer(self, text_data):
         image = json.loads(text_data)["image"]
-        image = self.reverse_string_compression(image)
+        image = self.reverseStringCompression(image)
         image = list(image)
-        move_up = AndrejBot.get_move(image)
+        move_up = AndrejBot.andrej_bot(image)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 1 
         }))
 
-    def andrai_agassi(self, court_json):
-        ball_y = json.loads(court_json)["bally"]
-        paddle_y = json.loads(court_json)["paddley"]
-        move_up = FaultyBot.get_move(ball_y, paddle_y)
+    def andraiAgassi(self, court_json):
+        bally = json.loads(court_json)["bally"]
+        paddley = json.loads(court_json)["paddley"]
+        move_up = FaultyBot.faulty_bot_ws(bally, paddley)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 1 
         }))
 
-    def bjorn_cyborg(self, text_data):
+    def bjornCyborg(self, text_data):
         image = json.loads(text_data)["image"]
-        image = self.reverse_string_compression(image)
+        image = self.reverseStringCompression(image)
         image = list(image)
-        move_up = Junior.get_move(image)
+        move_up = Junior.junior_bot(image)
         self.send(text_data=json.dumps({
             'moveup': move_up,
             'playerID': 1 
         }))
 
-    def reverse_string_compression (self, image):
+    def reverseStringCompression (self, image):
         image = image.replace('v', 'wwwwwwwwwwwwwwwwwwww')
         image = image.replace('w', '00000000000000000000000000000000000000000000000000000000000000000000000000000000')
         image = image.replace('x', '0000000000000000000000000000000000000000')

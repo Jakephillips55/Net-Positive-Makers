@@ -2,8 +2,8 @@ from django.db import models
 
 class FaultyBot(models.Model):
     @classmethod
-    def get_move(request, ball_y, paddle_y):
-        if str(ball_y) <= str(paddle_y):
+    def faulty_bot_ws(request, bally, paddley):
+        if str(bally) <= str(paddley):
             return True
         else:
             return False
