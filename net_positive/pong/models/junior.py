@@ -10,7 +10,7 @@ class Junior(models.Model):
 
 
     @classmethod 
-    def junior_bot(self, pixels):
+    def get_move(self, pixels):
         D = 80 * 80
         cur_x = Junior.prepro(pixels)
         x = cur_x - self.prev_x if self.prev_x is not None else np.zeros(D)
