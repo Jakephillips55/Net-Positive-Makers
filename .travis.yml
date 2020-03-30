@@ -1,12 +1,12 @@
 language: python
-dist: xenial
+dist: trust
 python:
 - '3.6'
 cache: pip3
 install:
 - pip3 install -r requirements.txt
 script:
-- python3 net_positive/manage.py test pong
+- pytest
 deploy:
   provider: heroku
   app: net-positive
