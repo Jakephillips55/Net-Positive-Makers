@@ -84,3 +84,10 @@ jasmine server
 ## Multiplayer Mode
 
 <img src="./images/multiplayer.png">
+
+## Sequence Diagram
+
+The below diagram shows an example interaction between components on Arcade mode, when one of the paddles is moved by a bot. On Training mode there would be WebSocket calls made for both bots. 
+
+
+<img src="./images/sequence_diagram.png">
