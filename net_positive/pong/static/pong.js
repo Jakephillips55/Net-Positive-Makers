@@ -13,23 +13,26 @@ class Pong {
     this.imageProcessor = imageProcessor;
     this.ball = ball;
     this.players = [player1, player2];
+    this.repeatAction = 3;
   }
 
   run(botSocket) {
     this.setPaddlesInitially()
     this.reset();
     let lastTime;
-    const callback = (milliseconds) => {
+    var pong = this;
+
+    function callback(milliseconds) {
       if (lastTime) {
-        if (!this.multiplayer) {this.updatePaddles();}
-        this.updateGame((milliseconds - lastTime) / 1000);
-        this.updateReward();
+        if (!pong.multiplayer) {pong.updatePaddles();}
+        pong.updateGame((milliseconds - lastTime) / 1000);
+        pong.updateReward();
       }
       lastTime = milliseconds;
-      requestAnimationFrame(callback);
-      if (this.isPointOver) {this.reset();}
-      this.draw();
-      if (!this.multiplayer && botSocket.readyState === 1) {this.getNextBotMoves();}   
+      if (pong.isPointOver) {pong.reset();}
+      pong.draw();
+      if (!pong.multiplayer && botSocket.readyState === 1) {pong.getNextBotMoves(botSocket);} 
+      requestAnimationFrame(callback);  
     }
     callback();
   }
@@ -41,15 +44,15 @@ class Pong {
   }
 
   updatePaddles() {
-    if (this.players[1].repeatActionCount < 3) {
+    if (this.players[1].repeatActionCount < this.repeatAction) {
       this.players[1].botMove(this._canvas.height);
     }
-    if (this.players[0].repeatActionCount < 3 && this.training) {
+    if (this.players[0].repeatActionCount < this.repeatAction && this.training) {
       this.players[0].botMove(this._canvas.height);
     }
   }
 
-  getNextBotMoves() {
+  getNextBotMoves(botSocket) {
     if (this.players[1].responseReceived) {
       this.getBotMove(botSocket);
     }
