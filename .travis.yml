@@ -5,8 +5,9 @@ python:
 cache: pip3
 install:
 - pip3 install -r requirements.txt
+- nvm install node
 script:
-- jasmine-ci
+- jasmine ci
 - PYTHONPATH=net_positive/ pytest --ds=net_positive.settings
 deploy:
   provider: heroku
