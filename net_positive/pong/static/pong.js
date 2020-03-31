@@ -13,6 +13,7 @@ class Pong {
     this.imageProcessor = imageProcessor;
     this.ball = ball;
     this.players = [player1, player2];
+    this.repeatAction = 3;
   }
 
   run(botSocket) {
@@ -43,10 +44,10 @@ class Pong {
   }
 
   updatePaddles() {
-    if (this.players[1].repeatActionCount < 3) {
+    if (this.players[1].repeatActionCount < this.repeatAction) {
       this.players[1].botMove(this._canvas.height);
     }
-    if (this.players[0].repeatActionCount < 3 && this.training) {
+    if (this.players[0].repeatActionCount < this.repeatAction && this.training) {
       this.players[0].botMove(this._canvas.height);
     }
   }
