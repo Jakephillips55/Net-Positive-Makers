@@ -87,7 +87,7 @@ jasmine server
 
 ## Sequence Diagram
 
-The below diagram shows an example interaction between components on Arcade mode, when one of the paddles is moved by a bot. On Training mode there would be WebSocket calls made for both bots. 
+The below diagram shows an example interaction between components on Arcade mode, when one of the paddles is moved by a bot. On Training mode there would be WebSocket calls made for the second bot also.
 
 
 <img src="./images/sequence_diagram.png">
