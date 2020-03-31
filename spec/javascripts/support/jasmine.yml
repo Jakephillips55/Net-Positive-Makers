@@ -1,12 +1,12 @@
 src_files:
-    - ./pong/static/vector.js
-    - ./pong/static/rectangle.js
-    - ./pong/static/ball.js
-    - ./pong/static/player.js
-    - ./pong/static/imageProcessor.js
-    - ./pong/static/botSocket.js
-    - ./pong/static/pong.js
-    - ./pong/static/game.js
+    - ./net_positive/pong/static/vector.js
+    - ./net_positive/pong/static/rectangle.js
+    - ./net_positive/pong/static/ball.js
+    - ./net_positive/pong/static/player.js
+    - ./net_positive/pong/static/imageProcessor.js
+    - ./net_positive/pong/static/botSocket.js
+    - ./net_positive/pong/static/pong.js
+    - ./net_positive/pong/static/game.js
 
 stylesheets:
 

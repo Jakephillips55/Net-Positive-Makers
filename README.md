@@ -65,7 +65,7 @@ PYTHONPATH=net_positive/ pytest --ds=net_positive.settings
 ```
 
 
-For JavaScript tests, navigate to the net_positive directory containing the spec directory. After running the following command tests will be visible at localhost:8888
+For JavaScript tests, navigate to the root of the directory. After running the following command tests will be visible at localhost:8888
 
 ```
 jasmine server
