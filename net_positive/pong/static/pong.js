@@ -30,7 +30,7 @@ class Pong {
       lastTime = milliseconds;
       if (pong.isPointOver) {pong.reset();}
       pong.draw();
-      if (!pong.multiplayer && botSocket.readyState === 1) {pong.getNextBotMoves();} 
+      if (!pong.multiplayer && botSocket.readyState === 1) {pong.getNextBotMoves(botSocket);} 
       requestAnimationFrame(callback);  
     }
     callback();
@@ -51,7 +51,7 @@ class Pong {
     }
   }
 
-  getNextBotMoves() {
+  getNextBotMoves(botSocket) {
     if (this.players[1].responseReceived) {
       this.getBotMove(botSocket);
     }
