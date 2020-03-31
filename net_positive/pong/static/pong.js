@@ -19,17 +19,19 @@ class Pong {
     this.setPaddlesInitially()
     this.reset();
     let lastTime;
-    const callback = (milliseconds) => {
+    var pong = this;
+
+    function callback(milliseconds) {
       if (lastTime) {
-        if (!this.multiplayer) {this.updatePaddles();}
-        this.updateGame((milliseconds - lastTime) / 1000);
-        this.updateReward();
+        if (!pong.multiplayer) {pong.updatePaddles();}
+        pong.updateGame((milliseconds - lastTime) / 1000);
+        pong.updateReward();
       }
       lastTime = milliseconds;
-      requestAnimationFrame(callback);
-      if (this.isPointOver) {this.reset();}
-      this.draw();
-      if (!this.multiplayer && botSocket.readyState === 1) {this.getNextBotMoves();}   
+      if (pong.isPointOver) {pong.reset();}
+      pong.draw();
+      if (!pong.multiplayer && botSocket.readyState === 1) {pong.getNextBotMoves();} 
+      requestAnimationFrame(callback);  
     }
     callback();
   }

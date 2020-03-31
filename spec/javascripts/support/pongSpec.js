@@ -37,4 +37,18 @@ describe('Pong', function() {
       expect(pong.players[1].position.y).toEqual(160);
     })
   })
-});
+
+//   describe("run", function() {
+//     it("does not ", function() {
+//       pong.setPaddlesInitially();
+//       expect(pong.players[0].position.x).toEqual(36);
+//       expect(pong.players[1].position.x).toEqual(284);
+//     })
+
+//     it("renders the players in the correct y position", function() {
+//       pong.setPaddlesInitially();
+//       expect(pong.players[0].position.y).toEqual(160);
+//       expect(pong.players[1].position.y).toEqual(160);
+//     })
+//   })
+// });
