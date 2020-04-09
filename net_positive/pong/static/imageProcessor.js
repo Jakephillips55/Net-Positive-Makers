@@ -11,8 +11,7 @@ class ImageProcessor {
   }
 
   retrievePixelData(context) {
-    var image = context.getImageData(0, 0, 320, 320);
-    var imageArray = Array.from(image.data);
+    var imageArray = context.getImageData(0, 0, 320, 320).data;
     imageArray = this.rgbaToBinary(imageArray);
     var imageString = imageArray.join('');
     imageString = this.compressString(imageString);
@@ -20,14 +19,15 @@ class ImageProcessor {
   }
 
   rgbaToBinary(imageArray) {
-    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 4})
-    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 3})
-    imageArray = imageArray.filter(function(_, i) {return (i + 1) % 2})
-
-    for (var i = 0, len = imageArray.length; i < len; i++) {
-      imageArray[i] < 127 ? imageArray[i] = 0 : imageArray[i] = 1;
+    var binaryArray = [];
+    for (i = 0; i < imageArray.length; i = i + 4) {
+      binaryArray.push(imageArray[i]);
     }
-    return imageArray;
+
+    for (var i = 0, len = binaryArray.length; i < len; i++) {
+      binaryArray[i] < 127 ? binaryArray[i] = 0 : binaryArray[i] = 1;
+    }
+    return binaryArray;
   }
 
   compressString(imageString) {
