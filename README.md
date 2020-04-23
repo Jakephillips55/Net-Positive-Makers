@@ -4,7 +4,7 @@ __Makers Final Project:__
 
 Our aim was to build a neural net that would learn to play the classic video game Pong! We then implemented this neural net in the backend of our program and connected it to our own version of Pong - built in Javascript!
 
-See it live on [*Heroku*](http://ai-pong.herokuapp.com/training)
+See it live on [*Heroku*](http://net-positive-pong-ai-v2.herokuapp.com/)
 
 __The Team:__ [*Asia Ellis*](https://github.com/asiaellis5), [*David Papamichael*](https://github.com/davidpaps), [*Jake Phillips*](https://github.com/Jakephillips55), [*Nicolas Raffray*](https://github.com/nicolasraffray), [*Tom Ratcliffe*](https://github.com/ratcliffetj)
 
